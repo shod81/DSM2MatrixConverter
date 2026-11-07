@@ -1,4 +1,4 @@
-"""Generate the Dsm2Empirum application icon (assets/icon.ico).
+"""Generate the Dsm2Empirum application icon (src/dsm2emp/data/assets/icon.ico).
 
 Renders the master SVG (large variant) plus a simplified low-res variant for
 16/24 px via PySide6's QSvgRenderer and packs everything into a multi-size
@@ -9,9 +9,9 @@ Usage:
     python tools/make_icon.py
 
 Outputs:
-    assets/icon.svg      master SVG (large variant)
-    assets/icon.ico      multi-size Windows icon
-    assets/icon_256.png  256 px preview (docs/screenshots)
+    assets/icon.svg                    master SVG (large variant)
+    assets/icon_256.png                256 px preview (docs/screenshots)
+    src/dsm2emp/data/assets/icon.ico   multi-size Windows icon
     scratch/icon_preview.png  size grid on light/dark background (not shipped)
 """
 
@@ -193,6 +193,8 @@ def main() -> None:
     app = QGuiApplication(sys.argv)  # noqa: F841 - required by Qt paint system
     assets = REPO_ROOT / "assets"
     assets.mkdir(exist_ok=True)
+    data_assets = REPO_ROOT / "src" / "dsm2emp" / "data" / "assets"
+    data_assets.mkdir(parents=True, exist_ok=True)
 
     large = _large_svg()
     (assets / "icon.svg").write_text(large, encoding="utf-8")
@@ -202,7 +204,7 @@ def main() -> None:
         svg = _small_svg() if size in SMALL_VARIANT_SIZES else large
         images[size] = render_svg_to_image(svg, size)
 
-    ico_path = assets / "icon.ico"
+    ico_path = data_assets / "icon.ico"
     ico_path.write_bytes(build_ico(images))
     images[256].save(assets / "icon_256.png")
 

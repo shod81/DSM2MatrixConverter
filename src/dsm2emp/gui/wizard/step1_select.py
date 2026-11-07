@@ -5,7 +5,7 @@ Conforms to Chapter 5.1:
 - Optionaler Zielordner
 - KI-Schalter (Standard AUS, ausgraut wenn kein Key) mit Klartext-Hinweis
 
-Es gibt genau ein eingebautes Regelwerk (rules/dsm_to_empirum.yaml); ein
+Es gibt genau ein eingebautes Regelwerk; ein
 Regelsatz-Dropdown existiert bewusst nicht. Ein externes Regelwerk lässt sich
 nur über die CLI (--rules) bzw. MigrationOptions.rules_path laden.
 """

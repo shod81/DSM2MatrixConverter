@@ -8,8 +8,29 @@ version = "1.0.0"
 description = "Migration tool: Ivanti DSM packages to Matrix42 Empirum Setup.inf"
 readme = "README.md"
 requires-python = ">=3.11"
+license = { text = "MIT" }
 authors = [
     { name = "DSM2Empirum Development Team" }
+]
+keywords = [
+    "empirum",
+    "dsm",
+    "ivanti",
+    "matrix42",
+    "migration",
+    "setup.inf",
+    "software-distribution",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Win32 (MS Windows)",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Software Distribution",
 ]
 dependencies = [
     "typer>=0.12.0",
@@ -46,11 +67,24 @@ ai = [
 [project.scripts]
 dsm2emp = "dsm2emp.cli:app"
 
+[project.urls]
+Homepage = "https://github.com/shod81/DSM2MatrixConverter-OpenFree"
+Repository = "https://github.com/shod81/DSM2MatrixConverter-OpenFree"
+Issues = "https://github.com/shod81/DSM2MatrixConverter-OpenFree/issues"
+Changelog = "https://github.com/shod81/DSM2MatrixConverter-OpenFree/blob/main/CHANGELOG.md"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-dsm2emp = ["py.typed"]
+dsm2emp = [
+    "py.typed",
+    "data/assets/*",
+    "data/assets/prompts/*",
+    "data/assets/schemas/*",
+    "data/rules/*",
+    "reference/*.yaml",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,23 +1,24 @@
-"""Resource-root resolution tests (T-100 packaging prerequisite).
+"""Resource-root resolution tests (packaging prerequisite).
 
-Dev mode must resolve to the repository root so that ``assets/`` and
-``rules/`` are found; the frozen-mode branch is exercised by the real
-PyInstaller build (packaging/build.ps1 smoke test, AK-5).
+The resources live inside the package under ``dsm2emp/data`` so that the same
+path works from a checkout, an installed wheel and a PyInstaller bundle.
 """
 
 from pathlib import Path
 
 from pytest import MonkeyPatch
 
+import dsm2emp
 from dsm2emp._resources import resource_root
 from dsm2emp.ai.prompts import PROMPTS_DIR, SCHEMAS_DIR
 from dsm2emp.report.render_html import TEMPLATE_PATH
 from dsm2emp.rules.loader import get_default_rules_path
 
 
-def test_resource_root_is_repo_root_in_dev_mode() -> None:
+def test_resource_root_is_package_data_dir() -> None:
     root = resource_root()
-    assert root == Path(__file__).resolve().parents[1]
+    package_dir = Path(dsm2emp.__file__).resolve().parent
+    assert root == package_dir / "data"
     assert (root / "assets").is_dir()
     assert (root / "rules").is_dir()
 

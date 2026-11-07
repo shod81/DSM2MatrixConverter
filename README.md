@@ -1,13 +1,14 @@
-# DSM2Empirum – Migrationstool Ivanti DSM → Matrix42 Empirum
+# DSM2Empirum – Migration von Ivanti DSM zu Matrix42 Empirum
 
-> Lokales Windows-Werkzeug (GUI & CLI), das **Ivanti-DSM-Paketordner** vollautomatisch in
-> konforme **Matrix42-Empirum-Paketstrukturen** mit fehlerfreier `Setup.inf` umwandelt.
+> Lokales Windows-Werkzeug (GUI & CLI), das **Ivanti-DSM-Paketordner** in
+> **Matrix42-Empirum-Paketstrukturen** mit gültiger `Setup.inf` umwandelt.
 
 ---
 
 ## Features
 
 ### Konvertierung
+
 | Funktion | Details |
 |---|---|
 | **Regelbasierte Transformation** | 90+ Regeln gemäß Matrix42 Setup.inf-Spezifikation (MSI, Unattended, Skripte, Shell-Links, Registry) |
@@ -15,7 +16,7 @@
 | **extern$- & .\\-Handling** | Dateien aus `extern$` / `Extern$` und Paketwurzel werden nach `Files\` kopiert; Skriptpfade (`.\`, relative Pfade und `extern$`) automatisch auf `%SRC%\Files` umgeschrieben |
 | **xcopy-Härtung** | Alle Kopiervorgänge über `xcopy /S /H /E /V` statt `Copy` für robuste Dateiübertragung |
 | **CallHidden** | Alle Programmaufrufe werden mit `CallHidden` gestartet (unsichtbar für den Endnutzer) |
-| **Uninstall-Reihenfolge** | Befehle in `[Set:Deinstallation]` werden korrekt **umgekehrt** emittiert (letzter DSM-Befehl → erster Empirum-Befehl). Grund: Empirum führt bei `Setup.exe /U` Sektionen und Befehle **von unten nach oben** aus (KB Abschnitt 7.1) – die Umkehrung stellt die korrekte Rückwärts-Reihenfolge sicher. Sub-Sections (`SectionRef`-Ziele) werden **nicht** umgekehrt, da sie beim Ansprung vorwärts laufen |
+| **Uninstall-Reihenfolge** | Befehle in `[Set:Deinstallation]` werden korrekt **umgekehrt** emittiert (letzter DSM-Befehl → erster Empirum-Befehl), weil Empirum bei `Setup.exe /U` Sektionen und Befehle von unten nach oben abarbeitet. Sub-Sections (`SectionRef`-Ziele) werden **nicht** umgekehrt, da sie beim Ansprung vorwärts laufen |
 | **Synthetisierte Deinstallation** | Fehlt im DSM-Paket `$BeginUninstallScript`, wird automatisch eine `Set:Deinstallation` durch Umkehrung der Installationsbefehle (MSI `/x`, Registry-Löschung, Dateibereinigung, `DelTree`) in Rückwärtsreihenfolge erzeugt |
 | **Ordner-Löschungen via DelTree** | DSM `Delete()` auf Verzeichnisse (keine Dateiendung) wird zu `DelTree` emittiert – in Install- und Deinstall-Kontext; Dateien bleiben `Del`. Abschließende Backslashes werden entfernt (`DelTree "Pfad\"` würde fehlschlagen) |
 | **Product-Section-Konformität** | `#Set:Product, DONTDELETE` und `#Set:Deinstallation, DELETE` – Sektionsaufrufe in `[Product]` erhalten kein führendes `-`-Zeichen |
@@ -23,6 +24,7 @@
 | **NIR-Import** | `.nir`-Dateien (Registry-Importdateien) werden vollständig in `[Reg:Product]` übernommen |
 
 ### Paketausgabe
+
 | Funktion | Details |
 |---|---|
 | **Standardkonforme Struktur** | `<GUID>\Install\Setup.inf`, `Files\`, `Manual\<Paketname>.pdf` |
@@ -31,25 +33,49 @@
 | **Migrationsberichte** | HTML/Markdown-Berichte mit Konfidenz-Scoring, Regeltracing und Nacharbeitsliste (TODOs) |
 
 ### Sicherheit & Integrität
+
 - **Nur-Lese-Zugriff** auf DSM-Quellpakete – keine Veränderung der Originaldaten
 - **SHA-256-Validierung** für alle Nutzlastdateien (vollständig im PDF-Manual ausgeschrieben)
 - Keine Netzwerkverbindung erforderlich – vollständig offline nutzbar
+- KI-Unterstützung ist optional, standardmäßig deaktiviert und nur per Opt-in aktivierbar
 
 ---
 
 ## Systemvoraussetzungen
 
 - Windows 10/11 (x64)
-- Keine Python-Installation nötig für die kompilierte `.exe`
+- Keine Python-Installation nötig für die kompilierten `.exe`-Dateien
+- Python 3.11+ beim Betrieb aus dem Quellcode
 
 ---
 
-## Verwendung (kompilierte EXE)
+## Installation
+
+### Fertige Binaries
+
+Die Release-Seite enthält `Dsm2Empirum.exe` (GUI) und `Dsm2EmpirumCmd.exe` (CLI)
+als selbstentpackende Single-EXE-Dateien.
+
+### Aus dem Quellcode
+
+```powershell
+git clone https://github.com/shod81/DSM2MatrixConverter-OpenFree.git
+cd DSM2MatrixConverter-OpenFree
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[gui]"
+```
+
+---
+
+## Verwendung
 
 ### GUI
+
 Doppelklick auf `Dsm2Empirum.exe` – Pakete per Drag & Drop oder Ordnerauswahl konvertieren.
 
 ### CLI
+
 ```powershell
 # Einzelnes Paket konvertieren
 Dsm2EmpirumCmd.exe migrate <DSM-Paketordner> -o <Empirum-Zielordner>
@@ -63,6 +89,28 @@ Dsm2EmpirumCmd.exe validate <Setup.inf>
 # Version & Selbsttest
 Dsm2EmpirumCmd.exe --version
 Dsm2EmpirumCmd.exe selftest
+```
+
+---
+
+## Projektstruktur
+
+```
+DSM2MatrixConverter-OpenFree/
+├── src/dsm2emp/
+│   ├── parser/         # DSM eScript, .nir und _ExpInfo.xml Parser
+│   ├── rules/          # Regelengine (90+ Transformationsregeln)
+│   ├── data/           # Laufzeit-Ressourcen: Regelkatalog, Templates, Prompts, Icon
+│   ├── reference/      # Empirum-Syntaxreferenz (YAML)
+│   ├── emitter/        # Setup.inf AST → Text-Renderer
+│   ├── validator/      # Syntax- und Semantikvalidierung
+│   ├── manual/         # PDF-Manual-Generator
+│   └── orchestrator.py # Paket-Konvertierungspipeline
+├── tests/              # 289 Tests (Unit, Integration, Golden, Roundtrip, E2E)
+│   └── data/templates/ # Referenz-Setup.inf-Vorlagen für Parser-/Validator-Tests
+├── packaging/          # PyInstaller Build-Skripte & .spec
+├── tools/              # Hilfsskripte (Icon-Generierung, Screenshots, Statistiken)
+└── docs/               # Entwickler- und Build-Dokumentation
 ```
 
 ---
@@ -88,27 +136,24 @@ mypy src tests
 powershell -ExecutionPolicy Bypass -File packaging\build.ps1
 ```
 
+Details zum Build, zur Ressourcen-Bündelung und zur AV-False-Positive-Strategie
+stehen in [`docs/BUILD.md`](docs/BUILD.md).
+
 ---
 
-## Projektstruktur
+## Mitwirken
 
-```
-DSM2MatrixConverter/
-├── src/dsm2emp/
-│   ├── parser/         # DSM eScript, .nir und _ExpInfo.xml Parser
-│   ├── rules/          # Regelengine (90+ Transformationsregeln)
-│   ├── emitter/        # Setup.inf AST → Text-Renderer
-│   ├── validator/      # Syntax- und Semantikvalidierung
-│   ├── manual/         # PDF-Manual-Generator
-│   └── orchestrator.py # Paket-Konvertierungspipeline
-├── tests/              # 193+ Tests (Unit, Integration, Golden, E2E)
-├── packaging/          # PyInstaller Build-Skripte & .spec
-├── rules/              # Regelkatalog (YAML)
-└── docs/               # Entwicklerdokumentation
-```
+Beiträge sind willkommen – siehe [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Sicherheitsrelevante Meldungen bitte gemäß [`SECURITY.md`](SECURITY.md).
 
 ---
 
 ## Lizenz
 
-Internes Werkzeug – nicht für die öffentliche Verbreitung bestimmt.
+MIT – siehe [`LICENSE`](LICENSE).
+
+## Markenhinweis
+
+Dieses Projekt ist ein unabhängiges Werkzeug und steht in keiner Verbindung zu
+Matrix42 AG oder Ivanti Software Inc. „Matrix42", „Empirum", „Ivanti" und „DSM"
+sind Marken der jeweiligen Inhaber und werden hier nur beschreibend verwendet.

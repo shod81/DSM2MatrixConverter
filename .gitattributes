@@ -1,0 +1,16 @@
+* text=auto
+
+# Setup.inf and DSM scripts are ANSI/CP1252 with CRLF line endings.
+*.inf text eol=crlf
+*.inc text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary fixtures and assets
+*.png binary
+*.ico binary
+*.msi binary
+*.mst binary
+*.exe binary
+*.cab binary

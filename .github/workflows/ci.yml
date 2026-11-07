@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install dependencies
+        run: pip install -e ".[dev,gui]"
+      - name: Run tests
+        run: pytest -q
+
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install build tooling
+        run: pip install build
+      - name: Build wheel
+        run: python -m build --wheel
+      - name: Verify bundled resources
+        shell: pwsh
+        run: |
+          $wheel = Get-ChildItem dist/*.whl | Select-Object -First 1
+          python -c "import sys, zipfile; n = zipfile.ZipFile(sys.argv[1]).namelist(); required = ['dsm2emp/data/rules/dsm_to_empirum.yaml', 'dsm2emp/data/assets/icon.ico', 'dsm2emp/reference/commands.yaml']; missing = [r for r in required if r not in n]; assert not missing, missing; print('resources OK')" $wheel

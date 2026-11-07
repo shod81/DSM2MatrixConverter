@@ -9,9 +9,9 @@ Builds two self-contained onefile executables (Chapter 9.6):
 
 Bundled read-only resources (resolved via ``dsm2emp._resources.resource_root``):
 
-* ``assets/report_template.html.j2``, ``assets/prompts/``, ``assets/schemas/``
-* ``rules/dsm_to_empirum.yaml``
-* ``dsm2emp/reference/*.yaml`` (Empirum syntax reference, lives inside the package)
+* ``dsm2emp/data/assets/`` (report template, prompts, schemas, icon)
+* ``dsm2emp/data/rules/dsm_to_empirum.yaml``
+* ``dsm2emp/data/reference/*.yaml`` (Empirum syntax reference)
 
 AV hardening (Risk R-08): UPX is disabled and no packer/compression beyond
 zlib is used - see docs/BUILD.md.
@@ -23,12 +23,7 @@ ROOT = os.path.normpath(os.path.join(SPECPATH, ".."))
 SRC = os.path.join(ROOT, "src")
 
 datas = [
-    (os.path.join(ROOT, "assets", "report_template.html.j2"), "assets"),
-    (os.path.join(ROOT, "assets", "icon.ico"), "assets"),
-    (os.path.join(ROOT, "assets", "prompts"), "assets/prompts"),
-    (os.path.join(ROOT, "assets", "schemas"), "assets/schemas"),
-    (os.path.join(ROOT, "rules", "dsm_to_empirum.yaml"), "rules"),
-    (os.path.join(SRC, "dsm2emp", "reference", "*.yaml"), "dsm2emp/reference"),
+    (os.path.join(SRC, "dsm2emp", "data"), "dsm2emp/data"),
 ]
 
 # Qt slimming: the GUI only uses QtCore/QtGui/QtWidgets. Everything else is
@@ -99,7 +94,7 @@ common_kwargs = dict(
     optimize=1,
 )
 
-icon_path = os.path.join(ROOT, "assets", "icon.ico")
+icon_path = os.path.join(SRC, "dsm2emp", "data", "assets", "icon.ico")
 icon = icon_path if os.path.exists(icon_path) else None
 
 gui_a = Analysis(

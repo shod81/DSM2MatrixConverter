@@ -13,7 +13,7 @@ from dsm2emp._resources import resource_root
 from dsm2emp.orchestrator import MigrationResult
 from dsm2emp.report.kpi import calculate_kpis
 
-# Path to template file in assets/ (repo root in dev, _MEIPASS when frozen)
+# Path to the bundled report template inside the package data directory
 TEMPLATE_PATH = resource_root() / "assets" / "report_template.html.j2"
 
 # Autoescaping is mandatory: report content includes raw DSM script lines and

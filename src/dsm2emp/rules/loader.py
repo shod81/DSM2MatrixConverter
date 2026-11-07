@@ -11,7 +11,7 @@ from dsm2emp.rules.model import RuleDefinition, RuleSet
 
 def get_default_rules_path() -> Path:
     """Find the default rules YAML file path."""
-    # 1. Prefer canonical repository / bundled rules via resource_root()
+    # 1. Prefer the bundled rules via resource_root()
     candidate = resource_root() / "rules" / "dsm_to_empirum.yaml"
     if candidate.exists():
         return candidate.resolve()
