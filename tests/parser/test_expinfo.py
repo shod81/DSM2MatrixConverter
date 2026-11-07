@@ -31,7 +31,7 @@ def test_parse_expinfo_xml_basic(tmp_path: Path) -> None:
                             <Tag>SwRevisionComment</Tag>
                         </MdsProperty>
                         <MdsProperty>
-                            <Value>2025-11-04T13:21:17Z</Value>
+                            <Value>2025-11-08T23:21:17Z</Value>
                             <Tag>ReleaseDate</Tag>
                         </MdsProperty>
                     </PropertyList>
@@ -51,7 +51,7 @@ def test_parse_expinfo_xml_basic(tmp_path: Path) -> None:
     assert meta.version == "25.01"
     assert meta.revision == "13"
     assert meta.revision_comment == "Freigegeben durch IT."
-    assert meta.release_date == "2025-11-04T13:21:17Z"
+    assert meta.release_date == "2025-11-08T23:21:17Z"
 
 
 def test_parse_expinfo_xml_empty_or_missing(tmp_path: Path) -> None:

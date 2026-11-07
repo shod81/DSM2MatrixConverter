@@ -111,7 +111,7 @@ def test_generate_manual_pdf_content(tmp_path: Path) -> None:
         product_name="PureMSIApp",
         manufacturer="TestCorp",
         version="2.5",
-        conversion_timestamp=datetime(2026, 9, 29, 18, 45, 0),
+        conversion_timestamp=datetime(2026, 10, 3, 23, 15, 0),
         package_type=".msi (Windows Installer Paket)",
         silent_parameters='/qn TRANSFORMS="setup.mst"',
         description=(
@@ -151,8 +151,8 @@ def test_generate_manual_pdf_content(tmp_path: Path) -> None:
     # Verify required elements per prompt
     assert "TestCorp" in extracted_text  # Herstellername
     assert "PureMSIApp" in extracted_text  # Produktname
-    assert "29.09.2026" in extracted_text  # Datum
-    assert "18:45:00" in extracted_text  # Uhrzeit
+    assert "03.10.2026" in extracted_text  # Datum
+    assert "23:15:00" in extracted_text  # Uhrzeit
     assert ".msi" in extracted_text  # Art des Pakets
     assert "/qn" in extracted_text  # Silent Parameter
     assert "Kurzbeschreibung des Pakets" in extracted_text  # Kurzbeschreibung des Pakets
