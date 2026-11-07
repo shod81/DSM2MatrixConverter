@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -16,6 +15,8 @@ from dsm2emp.gui.start_window import StartWindow
 from dsm2emp.gui.wizard.wizard import MigrationWizard
 from dsm2emp.orchestrator import MigrationOptions, migrate_single
 from dsm2emp.scanner.scanner import scan
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def create_rich_enterprise_package(root: Path) -> Path:
@@ -62,12 +63,8 @@ def create_rich_enterprise_package(root: Path) -> Path:
 def main() -> None:
     app = create_app()
 
-    repo_out = Path(r"c:\AntiGravity\DSM2MatrixConverter\docs\screenshots")
-    brain_out = Path(
-        r"C:\Users\stefa\.gemini\antigravity-ide\brain\e8af5bbb-7fad-4947-ba5e-2f14772786ea\screenshots"
-    )
+    repo_out = REPO_ROOT / "docs" / "screenshots"
     repo_out.mkdir(parents=True, exist_ok=True)
-    brain_out.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
@@ -103,6 +100,10 @@ def main() -> None:
         wizard.page_select.src_edit.setText(str(src_pkg))
         wizard.page_select.tgt_edit.setText(r"C:\Empirum_Depot\EnterpriseApp_2026_x64_Empirum")
         wizard.page_select._on_src_changed(str(src_pkg))
+        # Show a neutral path instead of the temporary build directory.
+        wizard.page_select.src_edit.blockSignals(True)
+        wizard.page_select.src_edit.setText(r"C:\DSM_Export\EnterpriseApp_2026_x64")
+        wizard.page_select.src_edit.blockSignals(False)
         app.processEvents()
         wizard.grab().save(str(repo_out / "02_wizard_step1_select.png"))
 
@@ -225,11 +226,7 @@ def main() -> None:
         batch_win.grab().save(str(repo_out / "08_batch_window_completed.png"))
         batch_win.close()
 
-    # Copy all generated screenshots to brain_out
-    for png in repo_out.glob("*.png"):
-        shutil.copy2(png, brain_out / png.name)
-
-    print(f"Successfully generated 8 screenshots in {repo_out} and {brain_out}!")
+    print(f"Successfully generated 8 screenshots in {repo_out}")
 
 
 if __name__ == "__main__":

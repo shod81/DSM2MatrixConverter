@@ -24,6 +24,7 @@ SRC = os.path.join(ROOT, "src")
 
 datas = [
     (os.path.join(SRC, "dsm2emp", "data"), "dsm2emp/data"),
+    (os.path.join(SRC, "dsm2emp", "reference", "*.yaml"), "dsm2emp/reference"),
 ]
 
 # Qt slimming: the GUI only uses QtCore/QtGui/QtWidgets. Everything else is
