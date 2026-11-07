@@ -6,8 +6,8 @@ Fehler meldest, Änderungen einreichst und was wir von Beiträgen erwarten.
 ## Entwicklungsumgebung
 
 ```powershell
-git clone https://github.com/shod81/DSM2MatrixConverter-OpenFree.git
-cd DSM2MatrixConverter-OpenFree
+git clone https://github.com/shod81/DSM2MatrixConverter.git
+cd DSM2MatrixConverter
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev,gui]"

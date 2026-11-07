@@ -11,7 +11,7 @@
 Bitte **keine** öffentlichen Issues für Sicherheitslücken. Nutze stattdessen
 GitHub Security Advisories:
 
-<https://github.com/shod81/DSM2MatrixConverter-OpenFree/security/advisories/new>
+<https://github.com/shod81/DSM2MatrixConverter/security/advisories/new>
 
 Bitte gib an:
 

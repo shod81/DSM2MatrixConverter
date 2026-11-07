@@ -59,8 +59,8 @@ als selbstentpackende Single-EXE-Dateien.
 ### Aus dem Quellcode
 
 ```powershell
-git clone https://github.com/shod81/DSM2MatrixConverter-OpenFree.git
-cd DSM2MatrixConverter-OpenFree
+git clone https://github.com/shod81/DSM2MatrixConverter.git
+cd DSM2MatrixConverter
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[gui]"
@@ -96,7 +96,7 @@ Dsm2EmpirumCmd.exe selftest
 ## Projektstruktur
 
 ```
-DSM2MatrixConverter-OpenFree/
+DSM2MatrixConverter/
 ├── src/dsm2emp/
 │   ├── parser/         # DSM eScript, .nir und _ExpInfo.xml Parser
 │   ├── rules/          # Regelengine (90+ Transformationsregeln)
