@@ -15,7 +15,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
-        run: pip install -e ".[dev,gui]"
+        run: pip install -e ".[dev,gui,ai]"
       - name: Ruff lint
         run: ruff check .
       - name: Ruff format
@@ -38,7 +38,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install dependencies
-        run: pip install -e ".[dev,gui]"
+        run: pip install -e ".[dev,gui,ai]"
       - name: Run tests
         run: pytest -q
 
