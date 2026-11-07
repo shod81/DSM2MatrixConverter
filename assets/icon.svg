@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="0.55" stop-color="#0284c7"/>
+      <stop offset="1" stop-color="#075985"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4ade80"/>
+      <stop offset="1" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.20"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="4" y="4" width="248" height="248" rx="56" fill="url(#bg)"/>
+  <rect x="4" y="4" width="248" height="248" rx="56" fill="url(#sheen)"/>
+  <rect x="10" y="10" width="236" height="236" rx="50" fill="none"
+        stroke="#bae6fd" stroke-opacity="0.5" stroke-width="3"/>
+
+  <!-- source package (Ivanti DSM): outlined -->
+  <rect x="28" y="82" width="72" height="92" rx="16" fill="#ffffff"
+        fill-opacity="0.14" stroke="#e0f2fe" stroke-width="9"/>
+  <line x1="46" y1="114" x2="82" y2="114" stroke="#e0f2fe"
+        stroke-opacity="0.9" stroke-width="7" stroke-linecap="round"/>
+  <line x1="46" y1="132" x2="74" y2="132" stroke="#e0f2fe"
+        stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"/>
+  <line x1="46" y1="150" x2="78" y2="150" stroke="#e0f2fe"
+        stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- conversion arrow -->
+  <path d="M106 125 h36 v-17 l36 28 -36 28 v-17 h-36 z"
+        transform="translate(0,-8)" fill="#f8fafc"/>
+
+  <!-- target package (Matrix42 Empirum): filled, validated -->
+  <rect x="156" y="82" width="72" height="92" rx="16" fill="url(#green)"/>
+  <path d="M172 128 l14 14 26 -28" fill="none" stroke="#f0fdf4"
+        stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

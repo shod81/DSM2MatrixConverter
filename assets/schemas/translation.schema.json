@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AiTranslationResponse",
+  "type": "object",
+  "required": ["fragments"],
+  "properties": {
+    "fragments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_ref", "empirum_command", "target_section", "confidence", "explanation"],
+        "properties": {
+          "source_ref": { "type": "string" },
+          "empirum_command": { "type": "string" },
+          "target_section": { "type": "string" },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          },
+          "explanation": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,251 @@
+[SetupInfo]
+Author                  = 
+CreationDate            = 
+InventoryID             = 
+Description             = 
+Method                  = MSI
+Tested on               = 
+Dependencies            = 
+Command line options    = /S2
+Last Change             = 
+Build                   = 0
+
+[VarDefInfo]
+; <Variable>, <Type: 0=Computer 1=User>, <Allow NULL values: 0=No 1=Yes>
+
+[Setup]
+Version=14.2
+ShowCaption=1
+BlockInput=0
+Platform=*
+
+[Requirements]
+
+[Application]
+ProductName={ProductName}
+DeveloperName={DeveloperName}
+Version={Version}
+Revision={Revision}
+SetupName=%ProductName% %Version% %SetupWizard%
+Text1="%ProductName% %Version%",         Arial,           30, , 2170F3, 4,    , LEFT BOLD ITALIC
+Text2="%DeveloperName%",                 Arial,           24, , 2170F3, 4,    , LEFT BOLD ITALIC
+Text8="%Company%",                       Arial,           18, , 2170F3, 4,  10, RIGHT BOLD ITALIC
+Text9="%InstallationFor% %WindowsUser%", Arial,           16, , 2170F3, 4, -18, BOTTOM ITALIC LEFT
+BackgroundColor=EFEFEF,000000
+CopyDialogRect=0%, 0%, 0%, 0%, HCENTER
+
+; Register all installations in common registry key
+UserKeyName=$Matrix42Packages$\%DeveloperName%\%ProductName%
+MachineKeyName=$Matrix42Packages$\%DeveloperName%\%ProductName%\%Version%
+UninstallKeyName=Matrix42 - %DeveloperName% %ProductName% %Version%
+UninstallDisplayName=Matrix42 - %DeveloperName% %ProductName% %Version%
+UninstallString=%ReinstallString% /U
+ReinstallString="%CommonSetupDir%\Setup.exe" "%App%\%SetupInfDir%\Setup.inf"
+UninstallDisplayIcon="%ApplicationDir%\%SetupInfDir%\Setup.ico",0
+UninstallOptions=NOMODIFY SYSTEMCOMPONENT
+HideUninstall=1
+ReinstallMode=1
+SrcDir=..
+
+; Matrix42 Scripts are copied in a common scripts directory
+ApplicationDir=%CommonAppData%\$Matrix42Scripts$\%DeveloperName%\%ProductName%\%Version%
+
+SetupInfDir={MSIInstallDir}
+DataDir=%Personal%
+AskUninstallOld=1
+ShellLinks=1
+CommonShellLinks=1
+CreateUnresolvableShellLinks=1
+UseStringSection=Strings:09
+UseSysStringSection=SysStrings:09
+DateWarning=1
+SizeWarning=0
+Reboot={MSIRebootFlg}
+PreventExternalReboot=1
+StartServicesOnReboot=0
+CallTimeOut=3600
+AbortAfterCallTimeOut=1
+DisableCancelButton=1
+ShowEndMessage=1
+EndMessage=%EndMessageDesc%
+
+[Strings:07]
+Disk1=Installationsmedium 1
+EndMessageDesc=Die Installation wurde erfolgreich abgeschlossen!
+ErrorLogMessage=Die Installation/Deinstallation wurde mit einer Fehlermeldung abgebrochen!
+InstallationFor=Installation für:
+InstallerDesc=Dienstprogramm zum Installieren einzelner Komponenten.
+InstallerName=Installationsprogramm
+SetupWizard=Installations-Assistent
+Uninstallation=deinstallieren
+
+[Strings:09]
+Disk1=Installation media 1
+EndMessageDesc=Installation was completed successfully!
+ErrorLogMessage=The installation/uninstallation aborted with an error message!
+InstallationFor=Installation for:
+InstallerDesc=Service program to install single components.
+InstallerName=Setup program
+SetupWizard=Installation Wizard
+Uninstallation=Uninstallation
+
+[SysStrings:07]
+Users=Benutzer
+
+[SysStrings:09]
+Users=Users
+
+[Environment]
+V_MSIInstallerID={MSIInstallerID}
+MSILogFileInstall=%Temp%\MSI_Install_%ProductName%.%Version%.%Revision%.log
+MSILogFileUninstall=%Temp%\MSI_Uninstall_%ProductName%.%Version%.%Revision%.log
+CommonSetupDir=%CommonFilesDir%\Setup%SetupBits%
+V_MachineValuesPath=\\%EmpirumServer%\Values$\MachineValues\%DomainName%
+V_UserValuesPath=%HKLM,"Software\matrix42\Software Depot","HomeServer"%\Values$\UserValues\%UserDomain%
+
+; #############################Die Folgende Werte sind zu prüfen und ggfl. anzupassen! ###############################################
+V_DisplayName={ProductName}*
+
+; Maschinenabhängige Variablen
+; machine dependent variables
+;VM_<Variable>=%%%V_MachineValuesPath%\%ComputerName%.ini,%ComputerName%,<Variable>%%
+
+; Userabhängige Variablen
+; user dependent variables
+;VU_<Variable>=%%%V_UserValuesPath%\%WindowsUser%.ini,%WindowsUser%,<Variable>%%
+
+; !!! Setzen der entsprechenden ReplaceEnv Befehle für die Variablen im Abschnitt [Product] nicht vergessen!!!
+; !!! Don't forget to set the appropriate ReplaceEnv instructions for the variables in the section [Product]!!!
+
+[Encryption]
+
+[Disks]
+1=%Disk1%
+
+[Options]
+Installer = %InstallerName%, COPYALWAYS, Installer, "%InstallerDesc%"
+Product   = %ProductName%,   COPYALWAYS, Product,   "%ProductDesc%"
+
+[Processes]
+; APP1=app.exe, app, KILLPROCESS ABORT
+
+[Installer]
+1:..\..\..\..\User\Setup.exe,          %CommonSetupDir%, OPTIONAL USEFILENAME DIRECTORY NOSIZEWARNING SETUP, 0
+1:..\..\..\..\User\SetupDeu.chm,       %CommonSetupDir%, OPTIONAL USEFILENAME DIRECTORY NOSIZEWARNING SETUP, 0
+1:..\..\..\..\User\SetupEnu.chm,       %CommonSetupDir%, OPTIONAL USEFILENAME DIRECTORY NOSIZEWARNING SETUP, 0
+1:%Temp%\Setup64.exe,                  %CommonSetupDir%\Setup.exe, OPTIONAL ALWAYS NOSIZEWARNING SETUP WINDOWS64,     0
+1:..\..\..\..\User\Setup64.exe,        %CommonSetupDir%\Setup.exe, OPTIONAL ALWAYS NOSIZEWARNING SETUP WINDOWS64,     0
+1:%SetupInfDir%\Setup.inf,                             , ALWAYS,                                             0
+1:%SetupInfDir%\Setup.ico,                             , OPTIONAL,                                           0
+; 1:%SetupInfDir%\Logo.bmp,                              , NORMAL,                                           0
+
+[Product]
+; ReplaceEnv <Variable>
+
+#Set:Product, DONTDELETE
+#Reg:OnUninstallProduct, DELETE
+#Reg:Product, DONTDELETE
+#Ini:Product, DONTDELETE
+#Security:Product
+#Set:Uninstall, DELETE
+
+;#################### qb! zeigt etwas an ##################################
+;#################### qn zeigt nichts an, funktioniert aber nicht immer ###
+
+[Set:Product]
+AddMeter -1
+Set MSIGUID_X64 = GetUninstallKeyName (%V_DisplayName%,x64)
+Set MSIGUID_X86 = GetUninstallKeyName (%V_DisplayName%,x86)
+ReplaceEnv MSIGUID_X64
+ReplaceEnv MSIGUID_X86
+If DoesRegKeyExist ("HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X64%,UnInstallString") == "1" | DoesRegKeyExist ("HKLM,SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X86%,UnInstallString") == "1" Then "RepairMSI" Else "InstallMSI" EndIf
+
+[RepairMSI]
+If "%MSIGUID_X64%" <> "" Then "Reinstall_x64" EndIf
+If "%MSIGUID_X86%" <> "" Then "Reinstall_x86" EndIF
+#InstallMSI
+
+[Reinstall_x64]
+; CallHidden cmd.exe /c taskkill /F /IM "app.exe"
+CallHidden MsiExec.exe /X %MSIGUID_X64% REBOOT=REALLYSUPPRESS /qn /L*v "%MSILogFileUninstall%"
+; Del "%ProgramFilesDir%\Vendor\App\config.cfg"
+; DelTree "%ProgramFilesDir%\Vendor\App"
+If %ErrorLevel% == "3010" Then "RebootRequired" EndIf
+If DoesRegKeyExist ("HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X64%,UnInstallString") == "1" Then "AbortMSIReInst" EndIf
+Del "%MSILogFileUninstall%"
+
+[Reinstall_x86]
+; CallHidden cmd.exe /c taskkill /F /IM "app.exe"
+CallHidden MsiExec.exe /X %MSIGUID_X86% REBOOT=REALLYSUPPRESS /qn /L*v "%MSILogFileUninstall%"
+; Del "%ProgramFilesDirX86%\Vendor\App\config.cfg"
+; DelTree "%ProgramFilesDirX86%\Vendor\App"
+If %ErrorLevel% == "3010" Then "RebootRequired" EndIf
+If DoesRegKeyExist ("HKLM,SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X86%,UnInstallString") == "1" Then "AbortMSIReInst" EndIf
+Del "%MSILogFileUninstall%"
+
+
+[InstallMSI]
+AddMeter -1
+CallHidden MsiExec.exe /I "%SRC%\{TransformedMSI}" {MSIPropertyParams} {MSITransformsParam} REBOOT=REALLYSUPPRESS /qn /L*v "%MSILogFileInstall%"
+If %ErrorLevel% == "3010" Then "RebootRequired" EndIf
+Set MSIGUID_X64 = GetUninstallKeyName (%V_DisplayName%,x64)
+Set MSIGUID_X86 = GetUninstallKeyName (%V_DisplayName%,x86)
+ReplaceEnv MSIGUID_X64
+ReplaceEnv MSIGUID_X86
+If DoesRegKeyExist ("HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X64%,UnInstallString") == "0" & DoesRegKeyExist ("HKLM,SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X86%,UnInstallString") == "0" Then "AbortMSIInst" EndIf
+Del "%MSILogFileInstall%"
+
+
+[Set:Uninstall]
+If "%MSIGUID_X64%" <> "" Then "Uninstall_x64" EndIf
+If "%MSIGUID_X86%" <> "" Then "Uninstall_x86" EndIF
+-ReplaceEnv MSIGUID_X64
+-ReplaceEnv MSIGUID_X86
+-Set MSIGUID_X64 = GetUninstallKeyName (%V_DisplayName%,x64)
+-Set MSIGUID_X86 = GetUninstallKeyName (%V_DisplayName%,x86)
+-AddMeter -1
+
+[Uninstall_x64]
+-Del "%MSILogFileUninstall%"
+If DoesRegKeyExist ("HKLM,SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X64%,UnInstallString") == "1" Then "AbortMSIUnInst" EndIf
+If %ErrorLevel% == "3010" Then "RebootRequired" EndIf
+; -CallHidden cmd.exe /c taskkill /F /IM "app.exe"
+-CallHidden MsiExec.exe /X %MSIGUID_X64% REBOOT=REALLYSUPPRESS /qn /L*v "%MSILogFileUninstall%"
+; Del "%ProgramFilesDir%\Vendor\App\config.cfg"
+; DelTree "%ProgramFilesDir%\Vendor\App"
+
+[Uninstall_x86]
+-Del "%MSILogFileUninstall%"
+If DoesRegKeyExist ("HKLM,SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\%MSIGUID_X86%,UnInstallString") == "1" Then "AbortMSIUnInst" EndIf
+If %ErrorLevel% == "3010" Then "RebootRequired" EndIf
+; -CallHidden cmd.exe /c taskkill /F /IM "app.exe"
+-CallHidden MsiExec.exe /X %MSIGUID_X86% REBOOT=REALLYSUPPRESS /qn /L*v "%MSILogFileUninstall%"
+; Del "%ProgramFilesDirX86%\Vendor\App\config.cfg"
+; DelTree "%ProgramFilesDirX86%\Vendor\App"
+
+
+[RebootRequired]
+SetReboot 0
+-SetReboot 0
+
+[AbortMSIInst]
+ErrorLogMsg %ErrorLogMessage% ErrorLevel: %ErrorLevel%
+Abort %ErrorLogMessage% ErrorLevel: %ErrorLevel%
+
+[AbortMSIReInst]
+ErrorLogMsg %ErrorLogMessage% ErrorLevel: %ErrorLevel%
+Abort %ErrorLogMessage% ErrorLevel: %ErrorLevel%
+
+[AbortMSIUnInst]
+-Abort %ErrorLogMessage% ErrorLevel: %ErrorLevel%
+-ErrorLogMsg %ErrorLogMessage% ErrorLevel: %ErrorLevel%
+
+[Reg:OnUninstallProduct]
+
+[Reg:Product]
+
+[Ini:Product]
+
+[Security:Product]
+
+[Shell:Product]

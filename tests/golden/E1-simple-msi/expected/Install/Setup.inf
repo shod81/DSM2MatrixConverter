@@ -1,0 +1,178 @@
+[SetupInfo]
+Author=
+CreationDate=
+InventoryID=
+Description=
+Method=MSI
+Tested on=
+Dependencies=
+Command line options=/S2
+Last Change=
+Build=0
+Dskptn=Setup.inf
+Comments=Converted by DSM2Empirum
+
+[VarDefInfo]
+; <Variable>, <Type: 0=Computer 1=User>, <Allow NULL values: 0=No 1=Yes>
+
+[Setup]
+Version=14.2
+ShowCaption=1
+BlockInput=0
+Platform=*
+
+[Requirements]
+
+[Application]
+ProductName=Example Viewer
+ProductNameShort=EXAMPLEV
+DeveloperName=IT
+DeveloperNameShort=IT
+Version=1.2.0
+Revision=0
+SetupName=%ProductName% %Version% %SetupWizard%
+Text1="%ProductName% %Version%",         Arial,           30, , 2170F3, 4,    , LEFT BOLD ITALIC
+Text2="%DeveloperName%",                 Arial,           24, , 2170F3, 4,    , LEFT BOLD ITALIC
+Text8="%Company%",                       Arial,           18, , 2170F3, 4,  10, RIGHT BOLD ITALIC
+Text9="%InstallationFor% %WindowsUser%", Arial,           16, , 2170F3, 4, -18, BOTTOM ITALIC LEFT
+BackgroundColor=EFEFEF,000000
+CopyDialogRect=0%, 0%, 100%, 100%, HCENTER VCENTER
+UserKeyName=$Matrix42Packages$\%DeveloperName%\%ProductName%
+MachineKeyName=$Matrix42Packages$\%DeveloperName%\%ProductName%\%Version%
+UninstallKeyName=Matrix42 - %DeveloperName% %ProductName% %Version%
+UninstallDisplayName=Matrix42 - %DeveloperName% %ProductName% %Version%
+UninstallString=%ReinstallString% /U
+ReinstallString="%CommonSetupDir%\Setup.exe" "%App%\%SetupInfDir%\Setup.inf"
+UninstallDisplayIcon="%ApplicationDir%\%SetupInfDir%\Setup.ico",0
+UninstallOptions=NOMODIFY SYSTEMCOMPONENT
+HideUninstall=1
+ReinstallMode=1
+SrcDir=..
+ApplicationDir=%CommonAppData%\$Matrix42Scripts$\%DeveloperName%\%ProductName%\%Version%
+SetupInfDir=Install
+DataDir=%Personal%
+AskUninstallOld=1
+ShellLinks=1
+CommonShellLinks=1
+CreateUnresolvableShellLinks=1
+UseStringSection=Strings:09
+UseSysStringSection=SysStrings:09
+DateWarning=1
+SizeWarning=0
+Reboot=0
+PreventExternalReboot=1
+StartServicesOnReboot=0
+CallTimeOut=1800
+AbortAfterCallTimeOut=1
+DisableCancelButton=1
+ShowEndMessage=1
+EndMessage=%EndMessageDesc%
+
+[Strings:07]
+Disk1=Installationsmedium 1
+EndMessageDesc=Die Installation wurde erfolgreich abgeschlossen!
+ErrorLogMessage=Die Installation/Deinstallation wurde mit einer Fehlermeldung abgebrochen!
+InstallationFor=Installation für:
+InstallerDesc=Dienstprogramm zum Installieren einzelner Komponenten.
+InstallerName=Installationsprogramm
+SetupWizard=Installations-Assistent
+Uninstallation=deinstallieren
+ErrorText=Fehler
+CallingText=beim Aufruf von
+ProductDesc=Example Viewer
+
+[Strings:09]
+Disk1=Installation media 1
+EndMessageDesc=Installation was completed successfully!
+ErrorLogMessage=The installation/uninstallation aborted with an error message!
+InstallationFor=Installation for:
+InstallerDesc=Service program to install single components.
+InstallerName=Setup program
+SetupWizard=Installation Wizard
+Uninstallation=Uninstallation
+ErrorText=Error
+CallingText=launching
+ProductDesc=Example Viewer
+
+[SysStrings:07]
+Users=Benutzer
+
+[SysStrings:09]
+Users=Users
+
+[Environment]
+V_LogFileInstall=%Temp%\Install_%ProductName%.%Version%.%Revision%.log
+V_LogFileUninstall=%Temp%\Uninstall_%ProductName%.%Version%.%Revision%.log
+CommonSetupDir=%CommonFilesDir%\Setup%SetupBits%
+V_MachineValuesPath=\\%EmpirumServer%\Values$\MachineValues\%DomainName%
+V_UserValuesPath=%HKLM,"Software\matrix42\Software Depot","HomeServer"%\Values$\UserValues\%UserDomain%
+V_DisplayName=Example Viewer*
+
+[Encryption]
+
+[Disks]
+1=%Disk1%
+
+[Options]
+Installer=%InstallerName%, COPYALWAYS, Installer, "%InstallerDesc%"
+Product=%ProductName%,   COPYALWAYS, Product,   "%ProductDesc%"
+
+[Processes]
+
+[Installer]
+1:..\..\..\..\User\Setup.exe, %CommonSetupDir%, OPTIONAL USEFILENAME DIRECTORY NOSIZEWARNING SETUP, 0
+1:..\..\..\..\User\SetupDeu.chm, %CommonSetupDir%, OPTIONAL USEFILENAME DIRECTORY NOSIZEWARNING SETUP, 0
+1:..\..\..\..\User\SetupEnu.chm, %CommonSetupDir%, OPTIONAL USEFILENAME DIRECTORY NOSIZEWARNING SETUP, 0
+1:%Temp%\Setup64.exe, %CommonSetupDir%\Setup.exe, OPTIONAL ALWAYS NOSIZEWARNING SETUP WINDOWS64, 0
+1:..\..\..\..\User\Setup64.exe, %CommonSetupDir%\Setup.exe, OPTIONAL ALWAYS NOSIZEWARNING SETUP WINDOWS64, 0
+1:%SetupInfDir%\Setup.inf, , ALWAYS, 0
+1:%SetupInfDir%\Setup.ico, , OPTIONAL, 0
+
+[Product]
+; Main Product Execution Section
+#Set:Product, DONTDELETE
+#Set:Deinstallation, DELETE
+
+[AbortMSIInst]
+ErrorLogMsg %ErrorText%
+Abort "Installation terminated with error"
+-ErrorLogMsg %ErrorText%
+-Abort "Installation terminated with error"
+
+[RebootRequired]
+SetReboot 0
+-SetReboot 0
+
+[Set:Deinstallation]
+If "%ErrorLevel%" != "0" Then "AbortMSIInst" EndIf
+If "%ErrorLevel%" == "3010" Then "RebootRequired" EndIf
+-CallHidden msiexec.exe /x {D6B1AC8F-2F5C-4B7A-9C3E-0A1B00000120} /qn
+
+[Set:DeInstallationError]
+-ErrorLogMsg %ErrorLogMessage%
+-Abort
+
+[Set:Else_2]
+If "%rc%" != "0" Then "Set:Then_3" EndIf
+
+[Set:InstallationError]
+ErrorLogMsg %ErrorLogMessage%
+Abort
+
+[Set:Product]
+; DSM eScript E1 Simple MSI
+CallHidden msiexec.exe /i "%Src%\Example Viewer.msi" /qn REBOOT=REALLYSUPPRESS
+If "%ErrorLevel%" == "3010" Then "RebootRequired" EndIf
+If "%ErrorLevel%" != "0" Then "AbortMSIInst" EndIf
+If "%rc%" == "3010" Then "Set:Then_1" Else "Set:Else_2" EndIf
+CallHidden xcopy.exe "%Src%\Lizenz.txt" "%App%\Lizenz.txt" /S /H /E /V /Y
+
+[Set:ReinstallationError]
+ErrorLogMsg %ErrorLogMessage%
+Abort
+
+[Set:Then_1]
+Set RebootNeeded=1
+
+[Set:Then_3]
+Abort "MSI Installation failed"

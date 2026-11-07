@@ -1,0 +1,60 @@
+# Package Standard (Matrix42 Empirum packaging conventions)
+# Derived from the MSI_Standard.inf, Unattended_Standard.inf, Skripte_Standard.inf
+# and Links_Standard.inf reference templates.
+
+package_standard:
+  version: "1.0"
+
+  conventions:
+    application_dir: "%CommonAppData%\\$Matrix42Scripts$\\%DeveloperName%\\%ProductName%\\%Version%"
+    setup_inf_dir_default: "Install"
+    src_dir_default: ".."
+    common_setup_dir: "%CommonFilesDir%\\Setup%SetupBits%"
+
+    registry:
+      user_key_name: "$Matrix42Packages$\\%DeveloperName%\\%ProductName%"
+      machine_key_name: "$Matrix42Packages$\\%DeveloperName%\\%ProductName%\\%Version%"
+      uninstall_key_name: "Matrix42 - %DeveloperName% %ProductName% %Version%"
+      uninstall_display_name: "Matrix42 - %DeveloperName% %ProductName% %Version%"
+      uninstall_display_icon: '"%ApplicationDir%\\%SetupInfDir%\\Setup.ico",0'
+      uninstall_options: "NOMODIFY SYSTEMCOMPONENT"
+      hide_uninstall: 1
+      reinstall_mode: 1
+      uninstall_string: "%ReinstallString% /U"
+      reinstall_string: '"%CommonSetupDir%\\Setup.exe" "%App%\\%SetupInfDir%\\Setup.inf"'
+
+    environment:
+      v_machine_values_path: '\\\\%EmpirumServer%\\Values$\\MachineValues\\%DomainName%'
+      v_user_values_path: '%HKLM,"Software\\matrix42\\Software Depot","HomeServer"%\\Values$\\UserValues\\%UserDomain%'
+      v_log_file_install: '%Temp%\\Install_%ProductName%.%Version%.%Revision%.log'
+      v_log_file_uninstall: '%Temp%\\Uninstall_%ProductName%.%Version%.%Revision%.log'
+
+    reboot_handling:
+      section_name: "RebootRequired"
+      install_command: "SetReboot 1"
+      uninstall_command: "-SetReboot 1"
+      errorlevel_trigger: "3010"
+
+    error_handling:
+      abort_install_section: "Set:InstallationError"
+      abort_reinstall_section: "Set:ReinstallationError"
+      abort_deinstall_section: "Set:DeInstallationError"
+      error_message_var: "%ErrorLogMessage%"
+
+  templates:
+    msi:
+      method: "MSI"
+      command_line_options: "/S2"
+      template_file: "tests/data/templates/MSI_Standard.inf"
+    unattended:
+      method: "Unattend"
+      command_line_options: "/S2"
+      template_file: "tests/data/templates/Unattended_Standard.inf"
+    skripte:
+      method: "Unattend"
+      command_line_options: "/S2"
+      template_file: "tests/data/templates/Skripte_Standard.inf"
+    links:
+      method: "Unattend"
+      command_line_options: "/S2"
+      template_file: "tests/data/templates/Links_Standard.inf"

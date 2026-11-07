@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migrationsreport: {{ kpis.package_name }}</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      background: var(--card-bg);
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--accent); }
+    h2 { font-size: 1.3rem; margin: 2rem 0 1rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; color: var(--accent); }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .badge-passed { background: #14532d; color: #86efac; }
+    .badge-warnings { background: #713f12; color: #fde047; }
+    .badge-failed { background: #7f1d1d; color: #fca5a5; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .meta-item { color: var(--text-muted); }
+    .meta-item strong { color: var(--text); }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      padding: 1.2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .kpi-num { font-size: 1.8rem; font-weight: bold; color: var(--text); margin-bottom: 0.2rem; }
+    .kpi-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 0.9rem;
+    }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: #0b1329; color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+    tr:last-child td { border-bottom: none; }
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.85em;
+      background: #0b1329;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      color: #38bdf8;
+    }
+    .alert-box {
+      background: var(--card-bg);
+      padding: 1rem 1.25rem;
+      border-left: 4px solid var(--accent);
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Migrationsreport: {{ kpis.package_name }}</h1>
+      <div>
+        <span class="badge badge-{{ status_class }}">{{ status_label }}</span>
+        <span style="margin-left: 1rem; font-size: 0.9rem; color: var(--text-muted);">Exit Code {{ result.exit_code }}</span>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item">Zeitstempel: <strong>{{ timestamp_str }}</strong></div>
+        <div class="meta-item">Tool: <strong>Dsm2Empirum v1.0 (Regeln v1)</strong></div>
+        <div class="meta-item">Quelle: <code>{{ result.source_root }}</code></div>
+        <div class="meta-item">Tree-Hash: <code>{{ result.inventory.tree_hash[:16] }}...</code></div>
+      </div>
+    </header>
+
+    <h2>1. Zusammenfassung &amp; Kennzahlen</h2>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-num">{{ kpis.lines_dsm }}</div>
+        <div class="kpi-label">DSM-Quellzeilen</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">{{ kpis.lines_setup_inf }}</div>
+        <div class="kpi-label">Setup.inf-Zeilen</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num" style="color: {% if kpis.confidence_color == 'green' %}var(--green){% elif kpis.confidence_color == 'yellow' %}var(--yellow){% else %}var(--red){% endif %};">
+          {{ (kpis.average_confidence * 100)|int }}%
+        </div>
+        <div class="kpi-label">Konfidenz Ø</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">{{ kpis.todo_count }}</div>
+        <div class="kpi-label">TODOs ({{ kpis.todo_quote_pct }}%)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">{{ kpis.error_count }}</div>
+        <div class="kpi-label">Fehler</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">{{ kpis.warning_count }}</div>
+        <div class="kpi-label">Warnungen</div>
+      </div>
+    </div>
+
+    <h2>2. Inventar (Scandaten)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Relativer Pfad</th>
+          <th>Kategorie</th>
+          <th style="text-align: right;">Groesse (Bytes)</th>
+          <th>SHA-256 Hash</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for art in result.inventory.artifacts %}
+        <tr>
+          <td><code>{{ art.rel_path }}</code></td>
+          <td>{{ art.kind }}</td>
+          <td style="text-align: right;">{{ art.size_bytes }}</td>
+          <td><code>{{ art.sha256[:16] if art.sha256 else '-' }}...</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>3. Mapping-Tabelle (Transformationsprotokoll)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>DSM-Quelle</th>
+          <th>Zielkonstrukt</th>
+          <th>Regel</th>
+          <th>Konfidenz</th>
+          <th>Referenz</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if result.transform_result and result.transform_result.traces %}
+          {% for t in result.transform_result.traces %}
+          <tr>
+            <td><code>{% if t.source_line %}Z.{{ t.source_line }}: {% endif %}{{ t.source_raw }}</code></td>
+            <td><code>{{ t.target_summary }}</code></td>
+            <td><code>{{ t.rule_id }}</code></td>
+            <td>{{ t.confidence }}</td>
+            <td>{{ t.doc_ref }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" style="color: var(--text-muted);">Keine direkten Befehlstransformationen erfasst.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <h2>4. Offene Punkte (TODOs &amp; manuelle Pruefungen)</h2>
+    {% if result.transform_result and result.transform_result.todos %}
+      <table>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Befehl</th>
+            <th>Meldung</th>
+            <th>Konfidenz</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for td in result.transform_result.todos %}
+          <tr>
+            <td>{% if td.src %}Z.{{ td.src.line }}{% else %}-{% endif %}</td>
+            <td><code>{{ td.raw }}</code></td>
+            <td>{{ td.message }}</td>
+            <td>{{ td.confidence }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert-box">Keine offenen TODOs – Paket wurde vollstaendig automatisiert migriert.</div>
+    {% endif %}
+
+    <h2>5. Validierungsergebnisse</h2>
+    {% if result.issues %}
+      <table>
+        <thead>
+          <tr>
+            <th>Schwere</th>
+            <th>Code</th>
+            <th>Meldung</th>
+            <th>Feld</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for iss in result.issues %}
+          <tr>
+            <td><strong>{{ iss.severity|upper }}</strong></td>
+            <td><code>{{ iss.code }}</code></td>
+            <td>{{ iss.message }}</td>
+            <td><code>{{ iss.field or '-' }}</code></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert-box">Keine Validierungsfehler oder Warnungen (0 Fehler, 0 Warnungen).</div>
+    {% endif %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,828 @@
+version: 1
+meta:
+  doc_basis: "Matrix42 Legacy Empirum Online Help (UEM 2025); Ivanti DSM Help vNow"
+rules:
+  # =========================================================================
+  # Commands (M-01 ... M-40)
+  # =========================================================================
+  - id: M-01
+    category: command
+    kind: ExecuteEx
+    description: "Programm ausführen, warten, Rückgabecode in Variable"
+    doc_ref: "ExecuteEx / Call / [Environment] ErrorLevel"
+    confidence: high
+    translate:
+      ast: CallStmt
+      check_rc: true
+
+  - id: M-02
+    category: command
+    kind: Execute
+    description: "Programm ausführen (Call oder CallHidden)"
+    doc_ref: "Call / CallHidden"
+    confidence: high
+    translate:
+      ast: CallStmt
+
+  - id: M-03
+    category: command
+    kind: MsiInstall
+    description: "MSI-Installation via MsiExec mit Silent-Parametern"
+    doc_ref: "interne Befehle Call / SetReboot"
+    confidence: high
+    translate:
+      ast: CallStmt
+      reboot_check: true
+
+  - id: M-04
+    category: command
+    kind: MsiUninstall
+    description: "MSI-Deinstallation via MsiExec /x {GUID} /qn"
+    doc_ref: "Call / UninstallString"
+    confidence: high
+    translate:
+      ast: CallStmt
+
+  - id: M-05
+    category: command
+    kind: Copy
+    description: "Lokale Dateioperation Copy mit Optionen"
+    doc_ref: "Copy <Source> <Destination>"
+    confidence: high
+    translate:
+      ast: CopyStmt
+
+  - id: M-06
+    category: command
+    kind: InstallFile
+    description: "Datei aus Quellmedium ins Zielverzeichnis kopieren"
+    doc_ref: "1:<Datei>,<Ziel>,<Flags>,<Größe>"
+    confidence: high
+    translate:
+      ast: CopyEntry
+
+  - id: M-07
+    category: command
+    kind: Delete
+    description: "Datei löschen (Del)"
+    doc_ref: "Del <Datei oder Verzeichnis>"
+    confidence: high
+    translate:
+      ast: DelStmt
+
+  - id: M-08
+    category: command
+    kind: MakeDir
+    description: "Verzeichnis anlegen (MD / MkDir)"
+    doc_ref: "MD/MkDir/RD/RmDir"
+    confidence: high
+    translate:
+      ast: MdStmt
+
+  - id: M-09
+    category: command
+    kind: RegLoad
+    description: "NIR/REG-Datei in Empirum-Registry-Sektion überführen"
+    doc_ref: "[Reg:<Name>]"
+    confidence: high
+    translate:
+      ast: RegSection
+
+  - id: M-10
+    category: command
+    kind: RegSet
+    description: "Registry-Einzeloperationen"
+    doc_ref: "[Reg:<Name>]"
+    confidence: high
+    translate:
+      ast: RegEntry
+
+  - id: M-11
+    category: command
+    kind: RegDelete
+    description: "Registry-Schlüssel oder -Wert löschen"
+    doc_ref: "[Reg:<Name>] Deletes an existing key or value"
+    confidence: high
+    translate:
+      ast: RegDeleteEntry
+
+  - id: M-12
+    category: command
+    kind: CreateLink
+    description: "Verknüpfung erstellen in [Shell:<Name>]"
+    doc_ref: "[Shell:<Name>]"
+    confidence: high
+    translate:
+      ast: ShellSection
+
+  - id: M-13
+    category: command
+    kind: Set
+    description: "Paketvariable setzen (Set Var=Wert)"
+    doc_ref: "Set <Variable>=<Value>"
+    confidence: high
+    translate:
+      ast: SetStmt
+
+  - id: M-14
+    category: command
+    kind: If
+    description: "Bedingter Block If/Else mit Sektionsauslagerung"
+    doc_ref: "If ... Then ... Else ... EndIf"
+    confidence: high
+    translate:
+      ast: IfStmt
+
+  - id: M-15
+    category: command
+    kind: GOTO
+    description: "Sprungbefehl GOTO zu Sektion oder For-Schleife"
+    doc_ref: "#<Name> / For"
+    confidence: high
+    translate:
+      ast: SectionCall
+
+  - id: M-16
+    category: command
+    kind: Sleep
+    description: "Verzögerung Sleep (Sekunden nach Millisekunden umrechnen)"
+    doc_ref: "Sleep <ms>"
+    confidence: high
+    translate:
+      ast: SleepStmt
+      multiplier: 1000
+
+  - id: M-17
+    category: command
+    kind: KillProcess
+    description: "Laufenden Prozess beenden"
+    doc_ref: "KillProcess <Name>"
+    confidence: high
+    translate:
+      ast: KillProcessStmt
+
+  - id: M-18
+    category: command
+    kind: Reboot
+    description: "Neustartanforderung via SetReboot 1"
+    doc_ref: "SetReboot [0-5]"
+    confidence: high
+    translate:
+      ast: SetRebootStmt
+
+  - id: M-19
+    category: command
+    kind: ExitProc
+    description: "Installationsabbruch oder Beendigung (Exit / Abort)"
+    doc_ref: "Exit / Abort / AbortSilent"
+    confidence: high
+    translate:
+      ast: AbortStmt
+
+  - id: M-20
+    category: command
+    kind: WriteLogEntry
+    description: "Protokolleintrag (Echo oder ErrorLogMsg)"
+    doc_ref: "Echo / ErrorLogMsg"
+    confidence: high
+    translate:
+      ast: EchoStmt
+
+  - id: M-21
+    category: command
+    kind: RunAsEx
+    description: "Ausführung unter anderem Benutzer"
+    doc_ref: "CallRunAs"
+    confidence: medium
+    translate:
+      ast: CallRunAsStmt
+
+  - id: M-22
+    category: command
+    kind: RunEScript
+    description: "Untergeordnetes eScript aufrufen"
+    doc_ref: "Call"
+    confidence: low
+    translate:
+      ast: Todo
+
+  - id: M-23
+    category: command
+    kind: RunPowerShellScript
+    description: "PowerShell-Skript ausführen via Call pwsh.exe"
+    doc_ref: "Call"
+    confidence: high
+    translate:
+      ast: CallStmt
+
+  - id: M-24
+    category: command
+    kind: CallScriptAs
+    description: "Skript im Kontext eines Benutzers aufrufen"
+    doc_ref: "CallScriptAs"
+    confidence: todo
+    translate:
+      ast: Todo
+
+  - id: M-25
+    category: command
+    kind: NetUseDepot
+    description: "Netzlaufwerk zum Depot verbinden"
+    doc_ref: "NetUse"
+    confidence: medium
+    translate:
+      ast: Todo
+
+  - id: M-26
+    category: command
+    kind: Evaluate
+    description: "Ausdruck berechnen / evaluieren"
+    doc_ref: "Functions for the If command"
+    confidence: low
+    translate:
+      ast: Todo
+
+  - id: M-27
+    category: command
+    kind: GetPackagePath
+    description: "Paketverzeichnis ermitteln (%Src% / %App%)"
+    doc_ref: "[Environment] Src"
+    confidence: high
+    translate:
+      ast: VarRef
+
+  - id: M-28
+    category: command
+    kind: DSMInfra
+    description: "DSM-Infrastrukturbefehle (CommitChangesToServer etc.)"
+    doc_ref: "Ivanti Lifecycle"
+    confidence: todo
+    translate:
+      ast: Todo
+
+  - id: M-29
+    category: command
+    kind: ModifyObjectProperty
+    description: "DSM-Objekteigenschaft modifizieren"
+    doc_ref: "Ivanti ModifyObjectProperty"
+    confidence: todo
+    translate:
+      ast: Todo
+
+  - id: M-30
+    category: command
+    kind: RegCustomAction
+    description: "Benutzerdefinierte Aktion registrieren"
+    doc_ref: "Ivanti RegCustomAction"
+    confidence: todo
+    translate:
+      ast: Todo
+
+  - id: M-31
+    category: command
+    kind: ChangeAssociatedUsers
+    description: "Benutzerzuordnung ändern"
+    doc_ref: "Ivanti ChangeAssociatedUsers"
+    confidence: todo
+    translate:
+      ast: Todo
+
+  - id: M-32
+    category: command
+    kind: ServiceControl
+    description: "Windows-Dienst steuern (Start/Stop/Add)"
+    doc_ref: "StartService / StopService / AddService"
+    confidence: medium
+    translate:
+      ast: ServiceStmt
+
+  - id: M-33
+    category: command
+    kind: PrinterControl
+    description: "Drucker oder Treiber einrichten"
+    doc_ref: "AddPrinter / AddPrinterDriver"
+    confidence: medium
+    translate:
+      ast: PrinterStmt
+
+  - id: M-34
+    category: command
+    kind: ODBC
+    description: "ODBC DSN oder Treiber registrieren"
+    doc_ref: "[ODBC ...]"
+    confidence: medium
+    translate:
+      ast: OdbcSection
+
+  - id: M-35
+    category: command
+    kind: AskUser
+    description: "Benutzerabfrage oder Dialog"
+    doc_ref: "[Prompts] Prompt"
+    confidence: low
+    translate:
+      ast: PromptStmt
+
+  - id: M-36
+    category: command
+    kind: IniFile
+    description: "INI-Datei bearbeiten"
+    doc_ref: "[Ini:<Name>]"
+    confidence: high
+    translate:
+      ast: IniSection
+
+  - id: M-37
+    category: command
+    kind: SecurityAcl
+    description: "Berechtigungen oder Gruppenrechte"
+    doc_ref: "[Security:<Name>]"
+    confidence: medium
+    translate:
+      ast: SecuritySection
+
+  - id: M-38
+    category: command
+    kind: IsTrue
+    description: "Wahrheitswertausdruck prüfen"
+    doc_ref: "If"
+    confidence: high
+    translate:
+      ast: IfStmt
+
+  - id: M-39
+    category: command
+    kind: IfCompare
+    description: "Variablenvergleich If %Var% = 'Val'"
+    doc_ref: "If"
+    confidence: high
+    translate:
+      ast: IfStmt
+
+  - id: M-40
+    category: command
+    kind: BeginUnInstallScript
+    description: "Trennmarke für Deinstallationslogik ($BeginUnInstallScript)"
+    doc_ref: "Deinstallations-Präfix -"
+    confidence: high
+    translate:
+      ast: PhaseSwitch
+
+  # =========================================================================
+  # Variables (V-01 ... V-18)
+  # =========================================================================
+  - id: V-01
+    category: variable
+    kind: windir
+    description: "Windows-Verzeichnis (%windir% -> %Windows%)"
+    doc_ref: "[Environment] Windows"
+    confidence: high
+    translate:
+      target: Windows
+
+  - id: V-02
+    category: variable
+    kind: winsysdir
+    description: "System32-Verzeichnis (%winsysdir% -> %System%)"
+    doc_ref: "[Environment] System"
+    confidence: high
+    translate:
+      target: System
+
+  - id: V-03
+    category: variable
+    kind: programfiles
+    description: "Programme-Verzeichnis (%ProgramFiles% -> %ProgramFilesDir%)"
+    doc_ref: "[Environment] ProgramFilesDir"
+    confidence: high
+    translate:
+      target: ProgramFilesDir
+
+  - id: V-04
+    category: variable
+    kind: commonfiles
+    description: "Gemeinsame Dateien (%CommonFiles% -> %CommonFilesDir%)"
+    doc_ref: "[Environment] CommonFilesDir"
+    confidence: high
+    translate:
+      target: CommonFilesDir
+
+  - id: V-05
+    category: variable
+    kind: temp
+    description: "Temporäres Verzeichnis (%Temp% -> %Temp%)"
+    doc_ref: "[Environment] Temp"
+    confidence: high
+    translate:
+      target: Temp
+
+  - id: V-06
+    category: variable
+    kind: username
+    description: "Benutzername (%UserName% -> %WindowsUser%)"
+    doc_ref: "[Environment] WindowsUser"
+    confidence: high
+    translate:
+      target: WindowsUser
+
+  - id: V-07
+    category: variable
+    kind: computername
+    description: "Computername (%ComputerName% -> %ComputerName%)"
+    doc_ref: "[Environment] ComputerName"
+    confidence: high
+    translate:
+      target: ComputerName
+
+  - id: V-08
+    category: variable
+    kind: packagevar
+    description: "Lokale Paketvariable"
+    doc_ref: "Set / [Environment]"
+    confidence: high
+    translate:
+      keep: true
+
+  - id: V-09
+    category: variable
+    kind: indirectvar
+    description: "Indirekte Variable %[Var%Num%]% -> %%Var%Num%%%"
+    doc_ref: "Tokenize-Beispiel / ReplaceEnv"
+    confidence: high
+    translate:
+      replace_env: true
+
+  - id: V-10
+    category: variable
+    kind: fallbackvar
+    description: "Fallback-Variable %[~Var~Default]%"
+    doc_ref: "If / Resolution of Variables"
+    confidence: high
+    translate:
+      conditional: true
+
+  - id: V-11
+    category: variable
+    kind: intfallbackvar
+    description: "Ganzzahl-Fallback %[~(int)Var~0]%"
+    doc_ref: "Resolution of Variables"
+    confidence: high
+    translate:
+      conditional: true
+
+  - id: V-12
+    category: variable
+    kind: literalpercent
+    description: "Literal Prozent %%"
+    doc_ref: "Flags REPLACEVARS / %%"
+    confidence: high
+    translate:
+      target: "%%"
+
+  - id: V-13
+    category: variable
+    kind: serverproperty
+    description: "DSM-Servereigenschaft mit Punkt"
+    doc_ref: "ServerProperties"
+    confidence: todo
+    translate:
+      target: TODO
+
+  - id: V-14
+    category: variable
+    kind: regvar
+    description: "Aus Registry gelesene Variable"
+    doc_ref: "%HKLM,...%"
+    confidence: high
+    translate:
+      reg_read: true
+
+  - id: V-15
+    category: variable
+    kind: shortpath
+    description: "8.3 Kurzpfad (%~Var%)"
+    doc_ref: "[Environment] ~"
+    confidence: high
+    translate:
+      prefix: "~"
+
+  - id: V-16
+    category: variable
+    kind: backslashvar
+    description: "Trailing Backslash Regel"
+    doc_ref: "[Environment] Backslashes in Variable Values"
+    confidence: high
+    translate:
+      strip_trailing_slash: true
+
+  - id: V-17
+    category: variable
+    kind: src
+    description: "Paketquelle (%Src% -> %Src%)"
+    doc_ref: "[Environment] Src"
+    confidence: high
+    translate:
+      target: Src
+
+  - id: V-18
+    category: variable
+    kind: app
+    description: "Installationszielverzeichnis (%App%)"
+    doc_ref: "[Application] ApplicationDir / %App%"
+    confidence: high
+    translate:
+      target: App
+
+  # =========================================================================
+  # Conditions (C-01 ... C-20)
+  # =========================================================================
+  - id: C-01
+    category: condition
+    kind: compare
+    description: "Variablenvergleich %Var% == 'value'"
+    doc_ref: "If"
+    confidence: high
+    translate:
+      format: '"{left}" == "{right}"'
+
+  - id: C-02
+    category: condition
+    kind: CheckPlatform
+    description: "Plattformprüfung Windows-Version"
+    doc_ref: "Platform= / %WindowsName%"
+    confidence: high
+    translate:
+      format: '%WindowsName% == "{platform}"'
+
+  - id: C-03
+    category: condition
+    kind: IsRunningOnX64
+    description: "Prüfung auf 64-Bit-Architektur"
+    doc_ref: "[Environment] WindowsBits"
+    confidence: high
+    translate:
+      format: '%WindowsBits% == "64"'
+
+  - id: C-04
+    category: condition
+    kind: DoesFileExist
+    description: "Dateiexistenzprüfung"
+    doc_ref: "Functions DoesFileExist"
+    confidence: high
+    translate:
+      format: 'DoesFileExist ("{path}") == "1"'
+
+  - id: C-05
+    category: condition
+    kind: DoesRegKeyExist
+    description: "Registryschlüssel-Existenzprüfung"
+    doc_ref: "Functions DoesRegKeyExist"
+    confidence: high
+    translate:
+      format: 'DoesRegKeyExist ("{key}") == "1"'
+
+  - id: C-06
+    category: condition
+    kind: DoesProcessExist
+    description: "Laufender Prozess Existenzprüfung"
+    doc_ref: "Functions DoesProcessExist"
+    confidence: high
+    translate:
+      format: 'DoesProcessExist ("{name}") == "1"'
+
+  - id: C-07
+    category: condition
+    kind: FileVersion
+    description: "Dateiversionsprüfung"
+    doc_ref: "Functions FileVersion"
+    confidence: high
+    translate:
+      format: 'FileVersion ("{path}") {op} "{version}"'
+
+  - id: C-08
+    category: condition
+    kind: IsTrue
+    description: "Ausdrucksprüfung"
+    doc_ref: "If"
+    confidence: high
+    translate:
+      format: "{expr}"
+
+  - id: C-09
+    category: condition
+    kind: AskUser
+    description: "Benutzerdialogbedingung"
+    doc_ref: "[Prompts]"
+    confidence: low
+    translate:
+      format: "Prompt"
+
+  - id: C-10
+    category: condition
+    kind: IsLaptop
+    description: "Laptop / Mobiles Gerät"
+    doc_ref: "[Environment] IsLaptop"
+    confidence: high
+    translate:
+      format: '%IsLaptop% == "1"'
+
+  - id: C-11
+    category: condition
+    kind: InGroup
+    description: "Benutzergruppenprüfung (INGLOBALGROUP/INLOCALGROUP)"
+    doc_ref: "If INGLOBALGROUP"
+    confidence: high
+    translate:
+      format: '"%WindowsUser%" INGLOBALGROUP "{group}"'
+
+  - id: C-12
+    category: condition
+    kind: IsRebootPending
+    description: "Ausstehender Neustart"
+    doc_ref: "BitAnd"
+    confidence: medium
+    translate:
+      format: "RebootPending"
+
+  - id: C-13
+    category: condition
+    kind: NetOK
+    description: "Netzwerkverbindung / Terminalserver"
+    doc_ref: "Network Conditions"
+    confidence: todo
+    translate:
+      format: "TODO"
+
+  - id: C-14
+    category: condition
+    kind: CheckInstallMode
+    description: "Installationsmodus Computer vs Benutzer"
+    doc_ref: "[Application] Machine/User"
+    confidence: medium
+    translate:
+      format: "InstallMode"
+
+  - id: C-15
+    category: condition
+    kind: IsSwPackageRevInstalled
+    description: "Bereits installierte Paketversion"
+    doc_ref: "[Requirements] InstalledVersion"
+    confidence: high
+    translate:
+      format: '%InstalledVersion% {op} "{version}"'
+
+  - id: C-16
+    category: condition
+    kind: LineExists
+    description: "Textzeile in Datei vorhanden"
+    doc_ref: "Functions DoesTextInFileExist"
+    confidence: high
+    translate:
+      format: 'DoesTextInFileExist ("{text}","{file}") == "1"'
+
+  - id: C-17
+    category: condition
+    kind: HasComputerAssociatedUser
+    description: "DSM-DB Benutzerzuordnung"
+    doc_ref: "Common Conditions"
+    confidence: todo
+    translate:
+      format: "TODO"
+
+  - id: C-18
+    category: condition
+    kind: GetDiskFreeSpace
+    description: "Freier Speicherplatz"
+    doc_ref: "Functions GetDiskFreeSpaceKB"
+    confidence: high
+    translate:
+      format: 'GetDiskFreeSpaceKB ("{path}") {op} "{kb}"'
+
+  - id: C-19
+    category: condition
+    kind: IsDotNetVersionAvailable
+    description: ".NET Framework Version vorhanden"
+    doc_ref: "Functions IsDotNetVersionAvailable"
+    confidence: high
+    translate:
+      format: 'IsDotNetVersionAvailable ("{version}") == "1"'
+
+  - id: C-20
+    category: condition
+    kind: IsRunningOnServerOS
+    description: "Windows Server Betriebssystem"
+    doc_ref: "[Environment] OS.ProductType"
+    confidence: high
+    translate:
+      format: '%OS.ProductType% != "1"'
+
+  # =========================================================================
+  # Structure (S-01 ... S-12)
+  # =========================================================================
+  - id: S-01
+    category: structure
+    kind: BlockFormation
+    description: "Einrückungsbaum in separate [Set:<Name>] Sektionen überführen"
+    doc_ref: "If ... Then Sektionsaufruf"
+    confidence: high
+    translate:
+      strategy: section_delegation
+
+  - id: S-02
+    category: structure
+    kind: GotoLabel
+    description: "GOTO-Sprünge als Sektionsaufrufe #<Name>"
+    doc_ref: "#<Name>"
+    confidence: high
+    translate:
+      strategy: section_call
+
+  - id: S-03
+    category: structure
+    kind: Loop
+    description: "Schleifenmuster als For-Schleife"
+    doc_ref: "For <Var>,<lb>,<ub>,<inc>,<Sektion>"
+    confidence: medium
+    translate:
+      strategy: for_loop
+
+  - id: S-04
+    category: structure
+    kind: UninstallSplit
+    description: "Trennung Install / Uninstall ($BeginUnInstallScript)"
+    doc_ref: "Deinstallations-Präfix -"
+    confidence: high
+    translate:
+      strategy: minus_prefix_and_flags
+
+  - id: S-05
+    category: structure
+    kind: UserMachineContext
+    description: "Benutzer- vs Maschinenteil: /TU-Befehle und imUserPart-Blöcke nach [Set:Client] (CLIENT); Maschinen-Einträge mit MACHINE; /AW in Command line options"
+    doc_ref: "CLIENT / MACHINE Flags and /AW"
+    confidence: high
+    translate:
+      strategy: user_machine_context
+
+  - id: S-06
+    category: structure
+    kind: ServiceContext
+    description: "Ausführung unter System/Dienst"
+    doc_ref: "Setup /S"
+    confidence: medium
+    translate:
+      strategy: agent_silent
+
+  - id: S-07
+    category: structure
+    kind: BitArchitecture
+    description: "32-Bit / 64-Bit Plattformweiche"
+    doc_ref: "Platform= / WINDOWS64"
+    confidence: high
+    translate:
+      strategy: platform_flags
+
+  - id: S-08
+    category: structure
+    kind: ContinueOnError
+    description: "Fehlerfortsetzung"
+    doc_ref: "Fehlerbehandlung"
+    confidence: medium
+    translate:
+      strategy: report_note
+
+  - id: S-09
+    category: structure
+    kind: Timeout
+    description: "Timeouts für Call-Befehle"
+    doc_ref: "[Application] CallTimeOut"
+    confidence: high
+    translate:
+      strategy: application_timeout
+
+  - id: S-10
+    category: structure
+    kind: Logging
+    description: "Protokollierung"
+    doc_ref: "/E Fehlerlog"
+    confidence: high
+    translate:
+      strategy: error_log
+
+  - id: S-11
+    category: structure
+    kind: Dependencies
+    description: "Paketabhängigkeiten"
+    doc_ref: "Empirum Depot"
+    confidence: todo
+    translate:
+      strategy: todo_report
+
+  - id: S-12
+    category: structure
+    kind: Versioning
+    description: "Paketversion und Revision"
+    doc_ref: "[Application] Version / Revision"
+    confidence: high
+    translate:
+      strategy: metadata_mapping

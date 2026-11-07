@@ -1,0 +1,207 @@
+# Empirum Setup.inf Funktionen für If-Bedingungen
+# Basierend auf System_Prompt_Empirum_Setup.inf.md und Matrix42 Setup.inf-Dokumentation
+
+functions:
+  - name: "DoesFileExist"
+    signature: 'DoesFileExist ("<FilePath>")'
+    return_type: "String ('1' oder '0')"
+    doc_ref: "Functions"
+    description: "Prüft, ob die angegebene Datei existiert."
+
+  - name: "DoesPathExist"
+    signature: 'DoesPathExist ("<DirectoryPath>")'
+    return_type: "String ('1' oder '0')"
+    doc_ref: "Functions"
+    description: "Prüft, ob das angegebene Verzeichnis existiert."
+
+  - name: "DoesRegKeyExist"
+    signature: 'DoesRegKeyExist ("<RootKey>,<SubKey>[,<ValueName>]")'
+    return_type: "String ('1' oder '0')"
+    doc_ref: "Functions"
+    description: "Prüft, ob ein Registrierungsschlüssel oder -wert existiert."
+
+  - name: "DoesProcessExist"
+    signature: 'DoesProcessExist ("<ProcessName>")'
+    return_type: "String ('1' oder '0')"
+    doc_ref: "Functions"
+    description: "Prüft, ob ein Prozess mit dem angegebenen Namen aktuell läuft."
+
+  - name: "FileVersion"
+    signature: 'FileVersion ("<FilePath>")'
+    return_type: "String (Versionsnummer, z. B. '1.2.3.4')"
+    doc_ref: "Functions"
+    description: "Liest die Datei- und Produktversion einer binären Datei aus."
+
+  - name: "GetUninstallKeyName"
+    signature: "GetUninstallKeyName (<DisplayName>, <Architecture>)"
+    return_type: "String (GUID oder Deinstallations-Schlüsselname)"
+    doc_ref: "Functions"
+    description: "Sucht in der Registry nach dem Deinstallationsschlüssel für den angegebenen Anzeigenamen unter x86 oder x64."
+
+  - name: "GetDiskFreeSpaceKB"
+    signature: 'GetDiskFreeSpaceKB ("<DriveOrPath>")'
+    return_type: "Integer (Kilobytes)"
+    doc_ref: "Functions"
+    description: "Gibt den freien Speicherplatz auf dem Laufwerk in Kilobytes zurück."
+
+  - name: "IsDotNetVersionAvailable"
+    signature: 'IsDotNetVersionAvailable ("<Version>")'
+    return_type: "String ('1' oder '0')"
+    doc_ref: "Functions"
+    description: "Prüft, ob das angegebene .NET Framework installiert ist."
+
+  - name: "DoesTextInFileExist"
+    signature: 'DoesTextInFileExist ("<Text>", "<FilePath>")'
+    return_type: "String ('1' oder '0')"
+    doc_ref: "Functions"
+    description: "Prüft, ob eine Textzeile in einer Datei existiert."
+
+  - name: "FileSize"
+    signature: 'FileSize ("<FilePath>")'
+    return_type: "Integer (Bytes)"
+    doc_ref: "Functions"
+    description: "Gibt die Größe der angegebenen Datei in Bytes zurück."
+
+  - name: "GetDiskFreeSpace"
+    signature: 'GetDiskFreeSpace ("<DriveOrPath>")'
+    return_type: "Integer (Bytes)"
+    doc_ref: "Functions"
+    description: "Gibt den freien Speicherplatz auf dem Laufwerk in Bytes zurück."
+
+  - name: "GetDotNetPatchLevel"
+    signature: 'GetDotNetPatchLevel ("<Version>")'
+    return_type: "Integer (Patchlevel)"
+    doc_ref: "Functions"
+    description: "Ermittelt das Service-Pack bzw. Patch-Level einer .NET-Version."
+
+  - name: "Left"
+    signature: 'Left ("<String>", <Count>)'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Gibt die linken n Zeichen einer Zeichenkette zurück."
+
+  - name: "Right"
+    signature: 'Right ("<String>", <Count>)'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Gibt die rechten n Zeichen einer Zeichenkette zurück."
+
+  - name: "Mid"
+    signature: 'Mid ("<String>", <Start>, <Count>)'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Gibt einen Teilbereich einer Zeichenkette zurück."
+
+  - name: "Len"
+    signature: 'Len ("<String>")'
+    return_type: "Integer"
+    doc_ref: "Functions"
+    description: "Ermittelt die Länge einer Zeichenkette."
+
+  - name: "Uppercase"
+    signature: 'Uppercase ("<String>")'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Konvertiert eine Zeichenkette in Großbuchstaben."
+
+  - name: "Lowercase"
+    signature: 'Lowercase ("<String>")'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Konvertiert eine Zeichenkette in Kleinbuchstaben."
+
+  - name: "RemoveFromLeft"
+    signature: 'RemoveFromLeft ("<String>", <Count>)'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Entfernt die ersten n Zeichen einer Zeichenkette."
+
+  - name: "RemoveFromRight"
+    signature: 'RemoveFromRight ("<String>", <Count>)'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Entfernt die letzten n Zeichen einer Zeichenkette."
+
+  - name: "HexToString"
+    signature: 'HexToString ("<Hex>", [<IsUnicode>])'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Konvertiert eine Hexadezimal-Zeichenkette in Text."
+
+  - name: "StringToHex"
+    signature: 'StringToHex ("<String>", [<IsUnicode>])'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Konvertiert Text in eine Hexadezimal-Zeichenkette."
+
+  - name: "GetIP"
+    signature: 'GetIP ()'
+    return_type: "String (IP-Adresse)"
+    doc_ref: "Functions"
+    description: "Gibt die primäre IP-Adresse des Rechners zurück."
+
+  - name: "GetNIC"
+    signature: 'GetNIC ([<Index>])'
+    return_type: "String (Name der Netzwerkkarte)"
+    doc_ref: "Functions"
+    description: "Gibt den Namen der n-ten Netzwerkkarte zurück."
+
+  - name: "GetNICs"
+    signature: 'GetNICs ()'
+    return_type: "Integer (Anzahl Netzwerkkarten)"
+    doc_ref: "Functions"
+    description: "Gibt die Gesamtanzahl der Netzwerkkarten zurück."
+
+  - name: "GetDCName"
+    signature: 'GetDCName ()'
+    return_type: "String (Name des Domain Controllers)"
+    doc_ref: "Functions"
+    description: "Ermittelt den zuständigen Active Directory Domain Controller."
+
+  - name: "BitAnd"
+    signature: 'BitAnd (<Val1>, <Val2>)'
+    return_type: "Integer"
+    doc_ref: "Functions"
+    description: "Bitweises UND zweier Zahlenwerte."
+
+  - name: "BitOr"
+    signature: 'BitOr (<Val1>, <Val2>)'
+    return_type: "Integer"
+    doc_ref: "Functions"
+    description: "Bitweises ODER zweier Zahlenwerte."
+
+  - name: "BitXOr"
+    signature: 'BitXOr (<Val1>, <Val2>)'
+    return_type: "Integer"
+    doc_ref: "Functions"
+    description: "Bitweises Exklusiv-ODER zweier Zahlenwerte."
+
+  - name: "ReadTextFile"
+    signature: 'ReadTextFile ("<FilePath>")'
+    return_type: "String"
+    doc_ref: "Functions"
+    description: "Liest den Inhalt einer Textdatei ein."
+
+operators:
+  - symbol: "=="
+    description: "Gleichheit (Text oder Zahl)"
+  - symbol: "<>"
+    description: "Ungleichheit"
+  - symbol: "!="
+    description: "Ungleichheit (Alternative)"
+  - symbol: "<"
+    description: "Kleiner als"
+  - symbol: "<="
+    description: "Kleiner oder gleich"
+  - symbol: ">"
+    description: "Größer als"
+  - symbol: ">="
+    description: "Größer oder gleich"
+  - symbol: "&"
+    description: "Logisches UND"
+  - symbol: "|"
+    description: "Logisches ODER"
+  - symbol: "INGLOBALGROUP"
+    description: "Prüft Mitgliedschaft in globaler Domänengruppe"
+  - symbol: "INLOCALGROUP"
+    description: "Prüft Mitgliedschaft in lokaler Gruppe"

@@ -1,0 +1,430 @@
+# Empirum Setup.inf Interne Befehls-Referenz
+# Basierend auf System_Prompt_Empirum_Setup.inf.md Abschnitt 4 und Matrix42 Doku
+
+commands:
+  - name: "Call"
+    category: "Prozessausführung"
+    doc_ref: "Call"
+    signature: 'Call "<Command>" [<Arguments>]'
+    description: "Startet ein externes Programm im Vordergrund und wartet auf dessen Beendigung."
+    sets_errorlevel: true
+
+  - name: "CallHidden"
+    category: "Prozessausführung"
+    doc_ref: "CallHidden"
+    signature: 'CallHidden "<Command>" [<Arguments>]'
+    description: "Startet ein externes Programm unsichtbar im Hintergrund und wartet auf dessen Beendigung."
+    sets_errorlevel: true
+
+  - name: "CallRunAs"
+    category: "Prozessausführung"
+    doc_ref: "CallRunAs"
+    signature: 'CallRunAs /U:<User> /P:<Password> "<Command>" [<Arguments>]'
+    description: "Führt einen Befehl unter einem alternativen Benutzerkonto aus."
+    sets_errorlevel: true
+
+  - name: "Sleep"
+    category: "Ablaufsteuerung"
+    doc_ref: "Sleep"
+    signature: "Sleep <Milliseconds>"
+    description: "Pausiert die Ausführung für die angegebene Zeitspanne in Millisekunden."
+
+  - name: "If"
+    category: "Bedingungen"
+    doc_ref: "If"
+    signature: 'If <Condition> Then "<Section>" [Else "<Section>"] EndIf'
+    description: "Bedingte Ablaufverzweigung zu einer anderen Sektion."
+
+  - name: "For"
+    category: "Schleifen"
+    doc_ref: "For"
+    signature: "For <Counter>, <LowerBound>, <UpperBound>, <Increment>, <Section>"
+    description: "Führt eine Zählschleife aus."
+
+  - name: "KillProcess"
+    category: "Prozesssteuerung"
+    doc_ref: "KillProcess"
+    signature: "KillProcess <ProcessName> [, <Timeout> [, <Prompt>]]"
+    description: "Beendet den angegebenen Prozess hart."
+
+  - name: "AskKillProcesses"
+    category: "Prozesssteuerung"
+    doc_ref: "AskKillProcesses"
+    signature: "AskKillProcesses <Timeout>, <ProcessKey1> [, <ProcessKey2> ...]"
+    description: "Fordert den Benutzer über Dialog auf, die angegebenen Prozesse zu schließen."
+
+  - name: "SetReboot"
+    category: "Systemsteuerung"
+    doc_ref: "SetReboot"
+    signature: "SetReboot <Value>"
+    description: "Steuert das Reboot-Verhalten (0-5). 1 = Reboot erforderlich."
+    allowed_values: ["0", "1", "2", "3", "4", "5"]
+
+  - name: "ErrorLogMsg"
+    category: "Protokollierung"
+    doc_ref: "ErrorLogMsg"
+    signature: "ErrorLogMsg <Message>"
+    description: "Schreibt eine Fehlermeldung in das UEM-Agenten-Protokoll."
+
+  - name: "Echo"
+    category: "Meldungen"
+    doc_ref: "Echo"
+    signature: "Echo <Message>"
+    description: "Zeigt eine Dialogbox mit Text an (im Silent-Modus unterdrückt)."
+
+  - name: "Abort"
+    category: "Ablaufsteuerung"
+    doc_ref: "Abort"
+    signature: "Abort [<Message>]"
+    description: "Bricht das Setup sofort mit Fehlermeldung ab."
+
+  - name: "Exit"
+    category: "Ablaufsteuerung"
+    doc_ref: "Exit"
+    signature: "Exit [<Message>]"
+    description: "Beendet das Setup regulär und erfolgreich."
+
+  - name: "Set"
+    category: "Variablen"
+    doc_ref: "Set"
+    signature: "Set <Variable> = <Value>"
+    description: "Weist einer Variablen einen Wert zu."
+
+  - name: "ReplaceEnv"
+    category: "Variablen"
+    doc_ref: "ReplaceEnv"
+    signature: "ReplaceEnv <Variable>"
+    description: "Löst verschachtelte Variablen in der angegebenen Variable auf."
+
+  - name: "AddMeter"
+    category: "Fortschritt"
+    doc_ref: "AddMeter"
+    signature: "AddMeter <Steps>"
+    description: "Setzt oder erhöht den Fortschrittsbalken im Setup-Fenster."
+
+  - name: "Copy"
+    category: "Dateioperationen"
+    doc_ref: "Copy"
+    signature: 'Copy "<Source>" "<Destination>"'
+    description: "Kopiert Dateien oder Ordner."
+
+  - name: "Del"
+    category: "Dateioperationen"
+    doc_ref: "Del"
+    signature: 'Del "<Path>"'
+    description: "Löscht eine Datei oder ein leeres Verzeichnis."
+
+  - name: "DelTree"
+    category: "Dateioperationen"
+    doc_ref: "DelTree"
+    signature: 'DelTree "<Path>"'
+    description: "Löscht ein Verzeichnis inklusive aller Unterverzeichnisse und Dateien."
+
+  - name: "MD"
+    category: "Dateioperationen"
+    doc_ref: "MD"
+    signature: 'MD "<Path>"'
+    description: "Erstellt ein neues Verzeichnis (rekursiv)."
+
+  - name: "RD"
+    category: "Dateioperationen"
+    doc_ref: "RD"
+    signature: 'RD "<Path>"'
+    description: "Entfernt ein leeres Verzeichnis."
+
+  - name: "AbortReboot"
+    category: "Ablaufsteuerung"
+    doc_ref: "AbortReboot"
+    signature: "AbortReboot [<Message>]"
+    description: "Bricht das Setup ab und fordert einen Neustart an."
+
+  - name: "AbortSilent"
+    category: "Ablaufsteuerung"
+    doc_ref: "AbortSilent"
+    signature: "AbortSilent [<Message>]"
+    description: "Stiller Abbruch ohne Fehlerdialog."
+
+  - name: "CallRunAsHidden"
+    category: "Prozessausführung"
+    doc_ref: "CallRunAsHidden"
+    signature: 'CallRunAsHidden /U:<User> /P:<Password> "<Command>" [<Arguments>]'
+    description: "Führt einen Befehl unter einem alternativen Benutzerkonto unsichtbar aus."
+
+  - name: "Rem"
+    category: "Ablaufsteuerung"
+    doc_ref: "Rem"
+    signature: "Rem <Comment>"
+    description: "Kommentarzeile als Befehl; wird bei Deinstallation ebenfalls ausgeführt."
+
+  - name: "Erase"
+    category: "Dateioperationen"
+    doc_ref: "Erase"
+    signature: 'Erase "<Path>"'
+    description: "Löscht Dateien oder Verzeichnisse (Alias für Del)."
+
+  - name: "Ren"
+    category: "Dateioperationen"
+    doc_ref: "Ren"
+    signature: 'Ren "<Source>" "<Destination>"'
+    description: "Benennt eine Datei um (wird bei Deinstallation automatisch rückgängig gemacht)."
+
+  - name: "Rename"
+    category: "Dateioperationen"
+    doc_ref: "Rename"
+    signature: 'Rename "<Source>" "<Destination>"'
+    description: "Alias für Ren."
+
+  - name: "Append"
+    category: "Dateioperationen"
+    doc_ref: "Append"
+    signature: 'Append "<Source>" "<Destination>"'
+    description: "Hängt den Inhalt einer Quelldatei an die Zieldatei an."
+
+  - name: "CD"
+    category: "Dateioperationen"
+    doc_ref: "CD"
+    signature: 'CD "<Path>"'
+    description: "Wechselt das Arbeitsverzeichnis des Setups."
+
+  - name: "ChDir"
+    category: "Dateioperationen"
+    doc_ref: "ChDir"
+    signature: 'ChDir "<Path>"'
+    description: "Alias für CD."
+
+  - name: "Unzip"
+    category: "Dateioperationen"
+    doc_ref: "Unzip"
+    signature: 'Unzip ("<Archive>", "<Destination>", ["<Mask>"], ["<Password>"])'
+    description: "Entpackt ein ZIP-Archiv."
+
+  - name: "Unrar"
+    category: "Dateioperationen"
+    doc_ref: "Unrar"
+    signature: 'Unrar ("<Archive>", "<Destination>", ["<Mask>"], ["<Password>"])'
+    description: "Entpackt ein RAR-Archiv."
+
+  - name: "ReplaceVars"
+    category: "Dateioperationen"
+    doc_ref: "ReplaceVars"
+    signature: 'ReplaceVars "<File>"'
+    description: "Ersetzt Umgebungsvariablen in einer Textdatei in-place."
+
+  - name: "ReplaceTextFile"
+    category: "Dateioperationen"
+    doc_ref: "ReplaceTextFile"
+    signature: 'ReplaceTextFile ("<File>", "<Search>", "<Replace>", <Count>)'
+    description: "Sucht und ersetzt Text in einer Datei."
+
+  - name: "ReplaceRegValue"
+    category: "Registry"
+    doc_ref: "ReplaceRegValue"
+    signature: 'ReplaceRegValue (<Root>, "<Key>", "<ValueName>", "<Search>", "<Replace>", <Count>)'
+    description: "Sucht und ersetzt Werte innerhalb eines Registry-Wertes."
+
+  - name: "DeleteXml"
+    category: "XML"
+    doc_ref: "DeleteXml"
+    signature: 'DeleteXml ("<File>", "<XPath>")'
+    description: "Löscht einen XML-Knoten über XPath."
+
+  - name: "ReadXmlNode"
+    category: "XML"
+    doc_ref: "ReadXmlNode"
+    signature: 'ReadXmlNode ("<File>", "<XPath>")'
+    description: "Liest einen XML-Knoten über XPath."
+
+  - name: "ReadXmlText"
+    category: "XML"
+    doc_ref: "ReadXmlText"
+    signature: 'ReadXmlText ("<File>", "<XPath>")'
+    description: "Liest den Text eines XML-Knotens über XPath."
+
+  - name: "UpdateXml"
+    category: "XML"
+    doc_ref: "UpdateXml"
+    signature: 'UpdateXml ("<File>", "<XPath>", "<Value>")'
+    description: "Aktualisiert einen XML-Knoten über XPath."
+
+  - name: "RegAsm"
+    category: ".NET"
+    doc_ref: "RegAsm"
+    signature: 'RegAsm "<Assembly>" [<Options>]'
+    description: "Registriert eine .NET-Assembly im System."
+
+  - name: "Increment"
+    category: "Arithmetik"
+    doc_ref: "Increment"
+    signature: "Increment (<Variable> [, <Step>])"
+    description: "Erhöht eine numerische Variable."
+
+  - name: "Decrement"
+    category: "Arithmetik"
+    doc_ref: "Decrement"
+    signature: "Decrement (<Variable> [, <Step>])"
+    description: "Vermindert eine numerische Variable."
+
+  - name: "Multiply"
+    category: "Arithmetik"
+    doc_ref: "Multiply"
+    signature: "Multiply (<Variable>, <Factor>)"
+    description: "Multipliziert eine Variable mit einem Faktor."
+
+  - name: "Divide"
+    category: "Arithmetik"
+    doc_ref: "Divide"
+    signature: "Divide (<Variable>, <Divisor>)"
+    description: "Dividiert eine Variable durch einen Wert."
+
+  - name: "Prompt"
+    category: "Meldungen"
+    doc_ref: "Prompt"
+    signature: "Prompt <Variable>"
+    description: "Fragt interaktiv einen Variablenwert ab."
+
+  - name: "Tokenize"
+    category: "Variablen"
+    doc_ref: "Tokenize"
+    signature: "Tokenize (<Variable> [, <Delimiter>])"
+    description: "Zerlegt einen Zeichenkettenwert in indizierte Variablen."
+
+  - name: "GetClipboardText"
+    category: "Variablen"
+    doc_ref: "GetClipboardText"
+    signature: "GetClipboardText ()"
+    description: "Liest Text aus der Windows-Zwischenablage."
+
+  - name: "CloseWindow"
+    category: "Fenstersteuerung"
+    doc_ref: "CloseWindow"
+    signature: "CloseWindow <Title> [, <Flags> [, <Timeout>, <Prompt>]]"
+    description: "Schließt ein Fenster anhand seines Fenstertitels."
+
+  - name: "WaitUntilFileExists"
+    category: "Ablaufsteuerung"
+    doc_ref: "WaitUntilFileExists"
+    signature: 'WaitUntilFileExists "<File>" [, <Timeout>]'
+    description: "Wartet, bis die angegebene Datei existiert."
+
+  - name: "WaitUntilProcessExists"
+    category: "Ablaufsteuerung"
+    doc_ref: "WaitUntilProcessExists"
+    signature: "WaitUntilProcessExists <Process> [, <Timeout>]"
+    description: "Wartet, bis der angegebene Prozess gestartet wurde."
+
+  - name: "WaitUntilRegKeyExists"
+    category: "Ablaufsteuerung"
+    doc_ref: "WaitUntilRegKeyExists"
+    signature: 'WaitUntilRegKeyExists "<Root>,<Key>[,<Value>]" [, <Timeout>]'
+    description: "Wartet, bis der Registrierungsschlüssel oder -wert existiert."
+
+  - name: "WaitWhileProcessExists"
+    category: "Ablaufsteuerung"
+    doc_ref: "WaitWhileProcessExists"
+    signature: "WaitWhileProcessExists <Process> [, <Timeout>]"
+    description: "Wartet, bis der angegebene Prozess beendet wurde."
+
+  - name: "AddService"
+    category: "Dienste"
+    doc_ref: "AddService"
+    signature: "AddService <ServiceName> <DisplayName> <Type> <StartType> <BinaryPath>"
+    description: "Richtet einen Windows-Dienst ein."
+
+  - name: "DeleteService"
+    category: "Dienste"
+    doc_ref: "DeleteService"
+    signature: "DeleteService <ServiceName>"
+    description: "Entfernt einen Windows-Dienst."
+
+  - name: "StartService"
+    category: "Dienste"
+    doc_ref: "StartService"
+    signature: "StartService <ServiceName>"
+    description: "Startet einen Windows-Dienst."
+
+  - name: "StopService"
+    category: "Dienste"
+    doc_ref: "StopService"
+    signature: "StopService <ServiceName>"
+    description: "Stoppt einen Windows-Dienst."
+
+  - name: "SystemShutdown"
+    category: "Systemsteuerung"
+    doc_ref: "SystemShutdown"
+    signature: "SystemShutdown <Message>, <Reboot>, <Force>, <Timeout>, <Async>"
+    description: "Fährt das System herunter oder führt einen Neustart mit Dialog durch."
+
+  - name: "EmptyClipboard"
+    category: "Systemsteuerung"
+    doc_ref: "EmptyClipboard"
+    signature: "EmptyClipboard"
+    description: "Leert die Windows-Zwischenablage."
+
+  - name: "PlaySound"
+    category: "Meldungen"
+    doc_ref: "PlaySound"
+    signature: "PlaySound <Disk>, <SoundFile>, <Flags>"
+    description: "Spielt eine Sounddatei ab."
+
+  - name: "ShowPicture"
+    category: "Meldungen"
+    doc_ref: "ShowPicture"
+    signature: "ShowPicture <Disk>, <ImageFile>, <X>, <Y>"
+    description: "Zeigt eine Bilddatei an."
+
+  - name: "SplashDialogText"
+    category: "Meldungen"
+    doc_ref: "SplashDialogText"
+    signature: "SplashDialogText <Message>"
+    description: "Setzt den Text eines Splash-Fensters."
+
+  - name: "SplashDialogOn"
+    category: "Meldungen"
+    doc_ref: "SplashDialogOn"
+    signature: "SplashDialogOn <X>, <Y>, <Width>, <Height>"
+    description: "Öffnet ein Splash-Fenster."
+
+  - name: "SplashDialogOff"
+    category: "Meldungen"
+    doc_ref: "SplashDialogOff"
+    signature: "SplashDialogOff"
+    description: "Schließt das Splash-Fenster."
+
+  - name: "Beep"
+    category: "Meldungen"
+    doc_ref: "Beep"
+    signature: "Beep [<Type>]"
+    description: "Gibt einen akustischen Signalton aus."
+
+  - name: "CollapseEnv"
+    category: "Variablen & Arithmetik"
+    doc_ref: "Binary-Tabelle (undokumentiert)"
+    signature: "CollapseEnv <Var>"
+    description: "Wertet einen in einer Variable gespeicherten Funktionsausdruck dynamisch aus und speichert das Ergebnis in der Variable."
+    undocumented: true
+    class: 1
+
+  - name: "Extract"
+    category: "Dateisystem"
+    doc_ref: "Binary-Tabelle (undokumentiert)"
+    signature: "Extract"
+    description: "Entpackt Dateien aus dem Setup.cab-Paketarchiv."
+    undocumented: true
+    class: 1
+
+  - name: "RenDir"
+    category: "Dateisystem"
+    doc_ref: "Binary-Tabelle (undokumentiert)"
+    signature: "RenDir <SourceDir> <TargetDir>"
+    description: "Benennt ein Verzeichnis um."
+    undocumented: true
+    class: 1
+
+  - name: "BlockInput"
+    category: "Systemsteuerung"
+    doc_ref: "Binary-Tabelle (undokumentiert)"
+    signature: "BlockInput <0|1>"
+    description: "Blockiert oder reaktiviert Tastatur- und Mauseingaben des Benutzers während der Installation."
+    undocumented: true
+    class: 1
+

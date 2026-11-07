@@ -1,0 +1,181 @@
+# Empirum Setup.inf Sektions-Referenz
+# Basierend auf System_Prompt_Empirum_Setup.inf.md und Matrix42 Setup.inf-Dokumentation
+
+sections:
+  - name: "SetupInfo"
+    required: true
+    description: "Metadaten des Pakets und Aufrufparameter"
+    doc_ref: "SetupInfo"
+    allowed_keys:
+      - name: "Author"
+        required: false
+      - name: "CreationDate"
+        required: false
+      - name: "InventoryID"
+        required: false
+      - name: "Description"
+        required: false
+      - name: "Method"
+        required: false
+        allowed_values: ["MSI", "EXE", "Unattend", "Diff", "Custom"]
+      - name: "Tested on"
+        required: false
+      - name: "Dependencies"
+        required: false
+      - name: "Command line options"
+        required: false
+        default: "/S2"
+      - name: "Last Change"
+        required: false
+      - name: "Build"
+        required: false
+
+  - name: "Setup"
+    required: true
+    description: "Steuerung der Setup-Engine selbst"
+    doc_ref: "Setup"
+    allowed_keys:
+      - name: "Version"
+        required: true
+        default: "14.2"
+      - name: "ShowCaption"
+        required: false
+        default: "1"
+      - name: "BlockInput"
+        required: false
+        default: "0"
+      - name: "Platform"
+        required: false
+        allowed_values: ["x86", "x86os", "x64", "*"]
+        default: "*"
+
+  - name: "Application"
+    required: true
+    description: "Produktmetadaten, Verzeichnisse und Registrierung"
+    doc_ref: "Application"
+    allowed_keys:
+      - name: "ProductName"
+        required: true
+      - name: "DeveloperName"
+        required: true
+      - name: "Version"
+        required: true
+      - name: "Revision"
+        required: true
+      - name: "SetupName"
+        required: false
+      - name: "Text1"
+        required: false
+      - name: "Text2"
+        required: false
+      - name: "Text8"
+        required: false
+      - name: "Text9"
+        required: false
+      - name: "BackgroundColor"
+        required: false
+      - name: "CopyDialogRect"
+        required: false
+      - name: "UserKeyName"
+        required: true
+      - name: "MachineKeyName"
+        required: true
+      - name: "UninstallKeyName"
+        required: true
+      - name: "UninstallDisplayName"
+        required: true
+      - name: "UninstallString"
+        required: true
+      - name: "ReinstallString"
+        required: true
+      - name: "UninstallDisplayIcon"
+        required: false
+      - name: "UninstallOptions"
+        required: false
+      - name: "HideUninstall"
+        required: false
+      - name: "ReinstallMode"
+        required: false
+      - name: "SrcDir"
+        required: true
+        default: ".."
+      - name: "ApplicationDir"
+        required: true
+      - name: "SetupInfDir"
+        required: true
+        default: "Install"
+      - name: "DataDir"
+        required: false
+      - name: "AskUninstallOld"
+        required: false
+      - name: "ShellLinks"
+        required: false
+      - name: "CommonShellLinks"
+        required: false
+      - name: "CreateUnresolvableShellLinks"
+        required: false
+      - name: "UseStringSection"
+        required: false
+      - name: "UseSysStringSection"
+        required: false
+      - name: "DateWarning"
+        required: false
+      - name: "SizeWarning"
+        required: false
+      - name: "Reboot"
+        required: false
+        allowed_values: ["0", "1", "2", "3", "4", "5"]
+      - name: "PreventExternalReboot"
+        required: false
+      - name: "StartServicesOnReboot"
+        required: false
+      - name: "CallTimeOut"
+        required: false
+      - name: "AbortAfterCallTimeOut"
+        required: false
+      - name: "DisableCancelButton"
+        required: false
+      - name: "ShowEndMessage"
+        required: false
+      - name: "EndMessage"
+        required: false
+
+  - name: "Environment"
+    required: true
+    description: "Definition lokaler Variablen und Pfade"
+    doc_ref: "Environment"
+
+  - name: "Product"
+    required: true
+    description: "Hauptablauf der Installation und Deinstallation (GOSUB-Aufrufe)"
+    doc_ref: "Product"
+
+  - name: "Disks"
+    required: false
+    description: "Definition der Medien"
+    doc_ref: "Disks"
+
+  - name: "Options"
+    required: false
+    description: "Definition von Installationskomponenten"
+    doc_ref: "Options"
+
+  - name: "Installer"
+    required: false
+    description: "Dateiliste für Setup-Engine-Komponenten"
+    doc_ref: "Installer"
+
+  - name: "Processes"
+    required: false
+    description: "Zu überwachende / schließende Prozesse"
+    doc_ref: "Processes"
+
+  - name: "VarDefInfo"
+    required: false
+    description: "Paketeigene Variablen-Definitionen (VM_/VU_)"
+    doc_ref: "VarDefInfo"
+
+  - name: "Requirements"
+    required: false
+    description: "Voraussetzungen zur Paketausführung"
+    doc_ref: "Requirements"

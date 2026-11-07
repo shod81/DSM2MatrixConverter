@@ -1,0 +1,35 @@
+# Dsm2Empirum – Projektregeln für den KI-Coding-Agenten (Cursor/Cline)
+
+## Produkt & Ziel
+- Tool wandelt Ivanti-DSM-Paketordner in Matrix42-Empirum-Pakete um; Kern MUSS
+  deterministisch und regelbasiert sein. KI (OpenRouter/z.ai) ist nur Ergänzung
+  und standardmäßig AUS.
+- Laufzeitumgebung: Windows 10/11 x64, lokale Ausführung, keine Adminrechte,
+  keine Serverabhängigkeit.
+
+## Unverletzliche Architekturregeln
+1. Setup.inf wird NUR über den Emitter (src/dsm2emp/emitter/) erzeugt.
+   String-Konkatenation von INF-Zeilen außerhalb des Emitters ist VERBOTEN.
+   Quoting/Escape-Entscheidungen dürfen ausschließlich in emitter/quote.py fallen.
+2. Der Validator validiert TEXT (nicht nur interne ASTs) – jede erzeugte und
+   jede KI-gelieferte Setup.inf läuft durch dieselbe Validierung.
+3. Domänenpakete (scanner, parser, ir, rules, ast, emitter, validator, builder)
+   importieren NIEMALS GUI- oder HTTP-Frameworks und führen NIEMALS Prozesse
+   aus (kein subprocess/os.system/os.startfile/ctypes). Statische Analyse nur!
+4. Quellpakete werden nur lesend geöffnet. Tests schützen das (tests/e2e).
+5. IR und AST sind pydantic-Modelle, frozen. Kein dict-Durchreichen über
+   Schichtgrenzen.
+
+## Korrektheitsquellen
+6. Verbindliche Syntaxreferenz: tests/data/templates/*_Standard.inf und
+   src/dsm2emp/reference/*.yaml. Bei Zweifel: dort nachschlagen; niemals Syntax „erfinden“.
+7. Jede Mapping-Regel trägt eine ID (M-xx/V-xx/C-xx/S-xx),
+   einen Doku-Verweis (doc_ref) und mindestens einen Test.
+   Neue Befehle/Flags ohne Referenzeintrag sind VERBOTEN → stattdessen Issue
+   „unbekannt“ + TODO.
+8. Nicht migrierbare Konstrukte erzeugen TODO-Kommentare (Rem) + Report-Eintrag.
+   Niemals stillschweigend weglassen, niemals raten.
+
+## Testpflicht
+9. Nach jedem Task muss die Test-Suite grün sein (`pytest -q`).
+10. `ruff check .` und `mypy --strict` bleiben sauber.
