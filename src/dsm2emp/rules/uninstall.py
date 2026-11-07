@@ -81,9 +81,7 @@ class UninstallSynthesizer:
                 if node.conditions and len(node.conditions) == 1:
                     c = node.conditions[0]
                     if (c.func_name or "").lower() == "checkinstallmode" and c.func_args:
-                        arg_str = (
-                            self.translate_value_to_str(c.func_args[0]).lower().strip("\"'")
-                        )
+                        arg_str = self.translate_value_to_str(c.func_args[0]).lower().strip("\"'")
                         if arg_str == "imuninstall" and not c.negated:
                             continue
                         if arg_str == "imuserpart" and not c.negated:
@@ -148,9 +146,7 @@ class UninstallSynthesizer:
 
         # 1. KillProcess
         if kind == "killprocess":
-            proc_val = cmd.params.get("process_name") or (
-                cmd.raw_args[0] if cmd.raw_args else None
-            )
+            proc_val = cmd.params.get("process_name") or (cmd.raw_args[0] if cmd.raw_args else None)
             proc_str = self.translate_value_to_str(proc_val) if proc_val else ""
             clean_proc = proc_str.strip("'\"")
             if clean_proc:
@@ -449,9 +445,7 @@ class UninstallSynthesizer:
                         Command(
                             name="DelTree",
                             args=[
-                                LiteralValue(
-                                    text=self._quote_path_if_needed(dst_str.rstrip("\\/"))
-                                )
+                                LiteralValue(text=self._quote_path_if_needed(dst_str.rstrip("\\/")))
                             ],
                             uninstall_only=True,
                         )
@@ -536,9 +530,7 @@ class UninstallSynthesizer:
 
         # 7. MakeDir / CreateFolder
         if kind in ("makedir", "createfolder"):
-            path_val = cmd.params.get("path") or (
-                cmd.raw_args[0] if cmd.raw_args else None
-            )
+            path_val = cmd.params.get("path") or (cmd.raw_args[0] if cmd.raw_args else None)
             path_str = _unquote(self.translate_value_to_str(path_val)) if path_val else ""
             if path_str:
                 traces.append(
@@ -555,9 +547,7 @@ class UninstallSynthesizer:
                     Command(
                         name="DelTree",
                         args=[
-                            LiteralValue(
-                                text=self._quote_path_if_needed(path_str.rstrip("\\/"))
-                            )
+                            LiteralValue(text=self._quote_path_if_needed(path_str.rstrip("\\/")))
                         ],
                         uninstall_only=True,
                     )

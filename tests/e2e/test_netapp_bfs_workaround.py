@@ -58,12 +58,12 @@ def test_netapp_bfs_workaround_inline_logic(tmp_path: Path) -> None:
     script = parse_script(FIX_LOADING_SPEED_SCRIPT, script_file)
 
     engine = RuleEngine(load_rules())
-    result = engine.transform_package(
-        IrPackage(name="NetAppBfsWorkaround", main_script=script)
-    )
+    result = engine.transform_package(IrPackage(name="NetAppBfsWorkaround", main_script=script))
 
     assert result.todo_count == 0, f"Expected 0 TODOs, got {result.todo_count}"
-    assert result.average_confidence == 1.0, f"Expected 1.0 confidence, got {result.average_confidence}"
+    assert result.average_confidence == 1.0, (
+        f"Expected 1.0 confidence, got {result.average_confidence}"
+    )
 
     inf_text, _ = emit(result.document)
 
@@ -74,17 +74,17 @@ def test_netapp_bfs_workaround_inline_logic(tmp_path: Path) -> None:
     )
 
     # Validate conditional installation in branch
-    assert '[Set:Then_1]' in inf_text
+    assert "[Set:Then_1]" in inf_text
     assert (
-        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 4 /f'
-        in inf_text
+        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 4 /f" in inf_text
     )
 
     # Validate uninstallation in [Set:Deinstallation]
-    assert '[Set:Deinstallation]' in inf_text
+    assert "[Set:Deinstallation]" in inf_text
     assert (
-        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 2 /f'
-        in inf_text
+        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 2 /f" in inf_text
     )
 
     # Validate Setup.inf syntax
@@ -142,12 +142,12 @@ def test_netapp_bfs_workaround_synthetic_package_e2e(
         in inf_text
     )
     assert (
-        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 4 /f'
-        in inf_text
+        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 4 /f" in inf_text
     )
     assert (
-        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 2 /f'
-        in inf_text
+        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 2 /f" in inf_text
     )
 
     # 7. Validator check
@@ -199,12 +199,12 @@ def test_netapp_bfs_workaround_real_package_e2e(
         in inf_text
     )
     assert (
-        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 4 /f'
-        in inf_text
+        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 4 /f" in inf_text
     )
     assert (
-        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 2 /f'
-        in inf_text
+        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 2 /f" in inf_text
     )
 
     # 7. Validator check

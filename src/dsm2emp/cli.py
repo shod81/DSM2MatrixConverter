@@ -162,7 +162,10 @@ def migrate(
         bool,
         typer.Option(
             "--allow-undocumented",
-            help="Allow undocumented Klasse 1 interpreter commands (CollapseEnv, RenDir, Extract, BlockInput)",
+            help=(
+                "Allow undocumented class-1 interpreter commands "
+                "(CollapseEnv, RenDir, Extract, BlockInput)"
+            ),
         ),
     ] = False,
 ) -> None:
@@ -253,7 +256,10 @@ def batch(
         bool,
         typer.Option(
             "--allow-undocumented",
-            help="Allow undocumented Klasse 1 interpreter commands (CollapseEnv, RenDir, Extract, BlockInput)",
+            help=(
+                "Allow undocumented class-1 interpreter commands "
+                "(CollapseEnv, RenDir, Extract, BlockInput)"
+            ),
         ),
     ] = False,
 ) -> None:

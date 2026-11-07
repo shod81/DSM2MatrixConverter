@@ -32,8 +32,8 @@ Tests nicht benötigt.
 5. **Quellschutz**: Paketquellen werden nur lesend geöffnet. Tests in
    `tests/e2e/` sichern das ab.
 
-`ruff check .` und `mypy src tests` sind empfohlen; derzeit existiert noch ein
-bekannter Altbestand an Befunden. Neue Befunde sollen nicht hinzukommen.
+`ruff check .`, `ruff format --check .` und `mypy src tests` müssen sauber sein;
+die CI prüft alle drei.
 
 ## Commits und Pull Requests
 

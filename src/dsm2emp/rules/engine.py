@@ -257,9 +257,7 @@ class RuleEngine:
             mapped_name = self.translate_variable_name(val.name)
             return f"%{mapped_name}%"
         if isinstance(val, IrCompositeValue):
-            return rewrite_extern_path(
-                "".join(self.translate_value_to_str(p) for p in val.parts)
-            )
+            return rewrite_extern_path("".join(self.translate_value_to_str(p) for p in val.parts))
         return ""
 
     def translate_condition(self, cond: IrCondition) -> Condition:
@@ -352,9 +350,7 @@ class RuleEngine:
                 "doesregvalueexist",
                 "regvalue",
             ):
-                key_raw = (
-                    self.translate_value_to_str(cond.func_args[0]) if cond.func_args else ""
-                )
+                key_raw = self.translate_value_to_str(cond.func_args[0]) if cond.func_args else ""
                 key_clean = unquote(key_raw).rstrip("\\")
                 parts = key_clean.split("\\", 1)
                 root = REG_ROOT_MAP.get(parts[0].lower(), parts[0])
@@ -374,9 +370,7 @@ class RuleEngine:
 
             # DSM MSIIsProductInstalled -> Empirum DoesRegKeyExist on Uninstall registry key
             if fn_lower == "msiisproductinstalled":
-                guid_raw = (
-                    self.translate_value_to_str(cond.func_args[0]) if cond.func_args else ""
-                )
+                guid_raw = self.translate_value_to_str(cond.func_args[0]) if cond.func_args else ""
                 guid_clean = unquote(guid_raw).strip()
                 emp_reg_key = (
                     f"HKLM,SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{guid_clean}"
@@ -464,11 +458,7 @@ class RuleEngine:
                         )
 
                     if right_clean in ("0", "1"):
-                        is_neg = (
-                            (right_clean == "0")
-                            if op in ("=", "==")
-                            else (right_clean == "1")
-                        )
+                        is_neg = (right_clean == "0") if op in ("=", "==") else (right_clean == "1")
                         return self.translate_condition(
                             IrCondition(
                                 raw=cond.raw,
@@ -480,8 +470,7 @@ class RuleEngine:
                         )
 
                     args_nodes: list[Value | str] = [
-                        LiteralValue(text=unquote(self.translate_value_to_str(a)))
-                        for a in raw_args
+                        LiteralValue(text=unquote(self.translate_value_to_str(a))) for a in raw_args
                     ]
                     return Comparison(
                         left=FunctionCall(function=fn_candidate, args=args_nodes),
@@ -528,11 +517,11 @@ class RuleEngine:
             left_node = _parse_op_node(left_str)
             right_node = _parse_op_node(right_str)
 
-            valid_rel: Literal["==", "=", "!=", "<>", "<", "<=", ">", ">="] = "=="
+            valid_relation: Literal["==", "=", "!=", "<>", "<", "<=", ">", ">="] = "=="
             if op in ("==", "=", "!=", "<>", "<", "<=", ">", ">="):
-                valid_rel = cast(Literal["==", "=", "!=", "<>", "<", "<=", ">", ">="], op)
+                valid_relation = cast(Literal["==", "=", "!=", "<>", "<", "<=", ">", ">="], op)
 
-            return Comparison(left=left_node, relation=valid_rel, right=right_node)
+            return Comparison(left=left_node, relation=valid_relation, right=right_node)
 
         # Fallback comparison
         return Comparison(
@@ -926,7 +915,9 @@ class RuleEngine:
 
             # Split arguments into list of argument tokens
             arg_list: list[Value | str] = (
-                [LiteralValue(text=a) for a in self._split_command_args(args_str)] if args_str else []
+                [LiteralValue(text=a) for a in self._split_command_args(args_str)]
+                if args_str
+                else []
             )
 
             result.append(
@@ -1280,9 +1271,8 @@ class RuleEngine:
                     or not folder_lower
                 ):
                     dest_dir = "%CommonPrograms%"
-                elif (
-                    folder_lower.startswith("start menu\\")
-                    or folder_lower.startswith("start menu/")
+                elif folder_lower.startswith("start menu\\") or folder_lower.startswith(
+                    "start menu/"
                 ):
                     sub = raw_folder[11:].strip("\\/")
                     dest_dir = f"%CommonPrograms%\\{sub}" if sub else "%CommonPrograms%"
@@ -1709,10 +1699,12 @@ class RuleEngine:
                         LiteralValue(text=f'"{full_reg_key}"'),
                     ]
                     if val_name:
-                        args.extend([
-                            LiteralValue(text="/v"),
-                            LiteralValue(text=f'"{val_name}"'),
-                        ])
+                        args.extend(
+                            [
+                                LiteralValue(text="/v"),
+                                LiteralValue(text=f'"{val_name}"'),
+                            ]
+                        )
                     args.append(LiteralValue(text="/f"))
                     result.append(
                         CallStmt(
@@ -1769,7 +1761,9 @@ class RuleEngine:
                     reg_type_name = "REG_SZ"
                     type_flag = "0x00000000"
                     if len(cmd.raw_args) >= 4:
-                        type_arg = unquote(self.translate_value_to_str(cmd.raw_args[3])).strip().upper()
+                        type_arg = (
+                            unquote(self.translate_value_to_str(cmd.raw_args[3])).strip().upper()
+                        )
                         if "DWORD" in type_arg:
                             reg_type_name = "REG_DWORD"
                             type_flag = "0x00010001"
@@ -1788,26 +1782,30 @@ class RuleEngine:
                     # Guarantees that inside If/Else branches or uninstall blocks,
                     # the change is executed ONLY when that branch is reached.
                     full_reg_key = f"{root_normalized}\\{subkey}" if subkey else root_normalized
-                    args: list[Value | str] = [
+                    args = [
                         LiteralValue(text="add"),
                         LiteralValue(text=f'"{full_reg_key}"'),
                     ]
                     if val_name:
-                        args.extend([
-                            LiteralValue(text="/v"),
-                            LiteralValue(text=f'"{val_name}"' if " " in val_name else val_name),
-                        ])
+                        args.extend(
+                            [
+                                LiteralValue(text="/v"),
+                                LiteralValue(text=f'"{val_name}"' if " " in val_name else val_name),
+                            ]
+                        )
                     else:
                         args.append(LiteralValue(text="/ve"))
 
                     data_quoted = f'"{val_data}"' if " " in val_data or not val_data else val_data
-                    args.extend([
-                        LiteralValue(text="/t"),
-                        LiteralValue(text=reg_type_name),
-                        LiteralValue(text="/d"),
-                        LiteralValue(text=data_quoted),
-                        LiteralValue(text="/f"),
-                    ])
+                    args.extend(
+                        [
+                            LiteralValue(text="/t"),
+                            LiteralValue(text=reg_type_name),
+                            LiteralValue(text="/d"),
+                            LiteralValue(text=data_quoted),
+                            LiteralValue(text="/f"),
+                        ]
+                    )
                     if cmd.x64_redirect_off:
                         args.append(LiteralValue(text="/reg:64"))
 
@@ -1826,7 +1824,8 @@ class RuleEngine:
                             source_raw=cmd.src.raw,
                             confidence="high",
                             target_summary=(
-                                f"CallHidden reg.exe add {full_reg_key} -> {val_name or '@'}={val_data} ({reg_type_name})"
+                                f"CallHidden reg.exe add {full_reg_key} -> "
+                                f"{val_name or '@'}={val_data} ({reg_type_name})"
                             ),
                             doc_ref="CallHidden reg.exe add",
                         )
@@ -1849,7 +1848,9 @@ class RuleEngine:
                             source_line=cmd.src.line,
                             source_raw=cmd.src.raw,
                             confidence="high",
-                            target_summary=f"{cmd.kind} {key_str} -> {val_name}={val_data} ({type_flag})",
+                            target_summary=(
+                                f"{cmd.kind} {key_str} -> {val_name}={val_data} ({type_flag})"
+                            ),
                             doc_ref="[Reg:Product]",
                         )
                     )
@@ -2077,7 +2078,11 @@ class RuleEngine:
             flags_str = self.translate_value_to_str(flags_val) if flags_val else ""
 
             is_sis = "rausesisaccount" in flags_str.lower()
-            arg_list = [LiteralValue(text=a) for a in self._split_command_args(param_str)] if param_str else []
+            arg_list = (
+                [LiteralValue(text=a) for a in self._split_command_args(param_str)]
+                if param_str
+                else []
+            )
 
             if is_sis or not flags_str:
                 result.append(
@@ -2107,7 +2112,12 @@ class RuleEngine:
 
             user_val = cmd.raw_args[2] if len(cmd.raw_args) > 2 else IrLiteral(value="")
             user_str = unquote(self.translate_value_to_str(user_val)).strip()
-            if not user_str or user_str.lower() in ("rausesisaccount", "standard", "system", "localsystem"):
+            if not user_str or user_str.lower() in (
+                "rausesisaccount",
+                "standard",
+                "system",
+                "localsystem",
+            ):
                 result.append(
                     CallStmt(
                         name="CallHidden",
@@ -2122,9 +2132,14 @@ class RuleEngine:
                         source_line=cmd.src.line,
                         source_raw=cmd.src.raw,
                         confidence="high",
-                        target_summary=f"Call '{prog_str}' (RunAsEx ohne Benutzer -> Machine Context)",
+                        target_summary=(
+                            f"Call '{prog_str}' (RunAsEx ohne Benutzer -> Machine Context)"
+                        ),
                         doc_ref="CallRunAs / M-21",
-                        notes=["RunAsEx ohne spezifischen Benutzer im Standard-Maschinenkontext ausgefuehrt."],
+                        notes=[
+                            "RunAsEx ohne spezifischen Benutzer im Standard-Maschinenkontext "
+                            "ausgefuehrt."
+                        ],
                     )
                 )
                 return result
@@ -2157,18 +2172,32 @@ class RuleEngine:
 
         # M-24: CallScriptAs
         if kind_lower == "callscriptas":
-            script_val = cmd.params.get("script") or (cmd.raw_args[0] if cmd.raw_args else IrLiteral(value=""))
+            script_val = cmd.params.get("script") or (
+                cmd.raw_args[0] if cmd.raw_args else IrLiteral(value="")
+            )
             script_str = unquote(self.translate_value_to_str(script_val))
-            args_val = cmd.params.get("arguments") or (cmd.raw_args[1] if len(cmd.raw_args) > 1 else None)
-            args_str = unquote(self.translate_value_to_str(args_val)) if args_val else ""
-            user_val = cmd.params.get("user") or (cmd.raw_args[2] if len(cmd.raw_args) > 2 else None)
-            user_str = unquote(self.translate_value_to_str(user_val)).strip() if user_val else ""
-            flags_val = cmd.params.get("flags") or (cmd.raw_args[4] if len(cmd.raw_args) > 4 else None)
+            cs_args_val = cmd.params.get("arguments") or (
+                cmd.raw_args[1] if len(cmd.raw_args) > 1 else None
+            )
+            cs_args_str = unquote(self.translate_value_to_str(cs_args_val)) if cs_args_val else ""
+            cs_user_val = cmd.params.get("user") or (
+                cmd.raw_args[2] if len(cmd.raw_args) > 2 else None
+            )
+            user_str = (
+                unquote(self.translate_value_to_str(cs_user_val)).strip() if cs_user_val else ""
+            )
+            flags_val = cmd.params.get("flags") or (
+                cmd.raw_args[4] if len(cmd.raw_args) > 4 else None
+            )
             flags_str = self.translate_value_to_str(flags_val).lower() if flags_val else ""
 
             is_sis = "rausesisaccount" in flags_str
             # If no user or raUseSisAccount, run in machine context
-            if is_sis or not user_str or user_str.lower() in ("standard", "system", "localsystem", "rausesisaccount"):
+            if (
+                is_sis
+                or not user_str
+                or user_str.lower() in ("standard", "system", "localsystem", "rausesisaccount")
+            ):
                 script_lower = script_str.lower()
                 arg_tokens: list[Value | str] = []
                 if script_lower.endswith(".ps1"):
@@ -2180,20 +2209,26 @@ class RuleEngine:
                         LiteralValue(text="-File"),
                         LiteralValue(text=self._quote_path_if_needed(script_str)),
                     ]
-                    if args_str:
-                        arg_tokens.extend([LiteralValue(text=a) for a in self._split_command_args(args_str)])
+                    if cs_args_str:
+                        arg_tokens.extend(
+                            [LiteralValue(text=a) for a in self._split_command_args(cs_args_str)]
+                        )
                 elif script_lower.endswith(".vbs"):
                     prog = "cscript.exe"
                     arg_tokens = [
                         LiteralValue(text="//nologo"),
                         LiteralValue(text=self._quote_path_if_needed(script_str)),
                     ]
-                    if args_str:
-                        arg_tokens.extend([LiteralValue(text=a) for a in self._split_command_args(args_str)])
+                    if cs_args_str:
+                        arg_tokens.extend(
+                            [LiteralValue(text=a) for a in self._split_command_args(cs_args_str)]
+                        )
                 else:
                     prog = script_str
-                    if args_str:
-                        arg_tokens = [LiteralValue(text=a) for a in self._split_command_args(args_str)]
+                    if cs_args_str:
+                        arg_tokens = [
+                            LiteralValue(text=a) for a in self._split_command_args(cs_args_str)
+                        ]
 
                 result.append(
                     CallStmt(
@@ -2209,9 +2244,15 @@ class RuleEngine:
                         source_line=cmd.src.line,
                         source_raw=cmd.src.raw,
                         confidence="high",
-                        target_summary=f"Call '{prog}' (CallScriptAs '{script_str}' im Standard-Maschinenkontext)",
+                        target_summary=(
+                            f"Call '{prog}' (CallScriptAs '{script_str}' "
+                            "im Standard-Maschinenkontext)"
+                        ),
                         doc_ref="CallScriptAs / M-24",
-                        notes=["CallScriptAs mit raUseSisAccount im Standard-Maschinenkontext ausgefuehrt."],
+                        notes=[
+                            "CallScriptAs mit raUseSisAccount im Standard-Maschinenkontext "
+                            "ausgefuehrt."
+                        ],
                     )
                 )
                 return result
@@ -2219,7 +2260,10 @@ class RuleEngine:
             # Genuine user impersonation
             result.append(
                 Comment(
-                    text=f"Rem TODO (M-24): CallScriptAs '{script_str}' als Benutzer '{user_str}' pruefen",
+                    text=(
+                        f"Rem TODO (M-24): CallScriptAs '{script_str}' als Benutzer "
+                        f"'{user_str}' pruefen"
+                    ),
                     style="rem",
                 )
             )
@@ -2267,8 +2311,14 @@ class RuleEngine:
 
         # IncrementVar / Increment
         if kind_lower in ("incrementvar", "increment"):
-            var_name = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "Var"
-            step = unquote(self.translate_value_to_str(cmd.raw_args[1])) if len(cmd.raw_args) > 1 else ""
+            var_name = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "Var"
+            )
+            step = (
+                unquote(self.translate_value_to_str(cmd.raw_args[1]))
+                if len(cmd.raw_args) > 1
+                else ""
+            )
             args_list = [VarRef(name=var_name)]
             if step and step != "1":
                 args_list.append(LiteralValue(text=step))
@@ -2285,7 +2335,9 @@ class RuleEngine:
                     source_line=cmd.src.line,
                     source_raw=cmd.src.raw,
                     confidence="high",
-                    target_summary=f"Increment ({var_name}{f', {step}' if step and step != '1' else ''})",
+                    target_summary=(
+                        f"Increment ({var_name}{f', {step}' if step and step != '1' else ''})"
+                    ),
                     doc_ref="Increment",
                 )
             )
@@ -2326,11 +2378,22 @@ class RuleEngine:
 
         # ModifyObjectProperty (DSM computer inventory metadata - redundant in Empirum)
         if kind_lower == "modifyobjectproperty":
-            prop_name = unquote(self.translate_value_to_str(cmd.raw_args[1])) if len(cmd.raw_args) > 1 else ""
-            prop_val = unquote(self.translate_value_to_str(cmd.raw_args[2])) if len(cmd.raw_args) > 2 else ""
+            prop_name = (
+                unquote(self.translate_value_to_str(cmd.raw_args[1]))
+                if len(cmd.raw_args) > 1
+                else ""
+            )
+            prop_val = (
+                unquote(self.translate_value_to_str(cmd.raw_args[2]))
+                if len(cmd.raw_args) > 2
+                else ""
+            )
             result.append(
                 Comment(
-                    text=f"; Rem Info: DSM-Objekteigenschaft '{prop_name}'={prop_val} (in Empirum nicht erforderlich)",
+                    text=(
+                        f"; Rem Info: DSM-Objekteigenschaft '{prop_name}'={prop_val} "
+                        "(in Empirum nicht erforderlich)"
+                    ),
                     style="rem",
                 )
             )
@@ -2340,9 +2403,14 @@ class RuleEngine:
                     source_line=cmd.src.line,
                     source_raw=cmd.src.raw,
                     confidence="high",
-                    target_summary=f"ModifyObjectProperty({prop_name}={prop_val}) - redundant in Empirum",
+                    target_summary=(
+                        f"ModifyObjectProperty({prop_name}={prop_val}) - redundant in Empirum"
+                    ),
                     doc_ref="Ivanti Lifecycle",
-                    notes=["DSM-Rechnerobjekteigenschaft; in Empirum durch Inventory/Registry abgebildet."],
+                    notes=[
+                        "DSM-Rechnerobjekteigenschaft; in Empirum durch "
+                        "Inventory/Registry abgebildet."
+                    ],
                 )
             )
             return result
@@ -2352,7 +2420,10 @@ class RuleEngine:
             ini_path = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else ""
             result.append(
                 Comment(
-                    text=f"; Rem Info: AddIni '{ini_path}' - INI-Sektionen in [Ini:Product] uebertragen",
+                    text=(
+                        f"; Rem Info: AddIni '{ini_path}' - "
+                        "INI-Sektionen in [Ini:Product] uebertragen"
+                    ),
                     style="rem",
                 )
             )
@@ -2373,7 +2444,9 @@ class RuleEngine:
             reg_file = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else ""
             result.append(
                 Comment(
-                    text=f"; Rem Info: RegLoadEx '{reg_file}' (Inhalt in [Reg:Product] uebertragen)",
+                    text=(
+                        f"; Rem Info: RegLoadEx '{reg_file}' (Inhalt in [Reg:Product] uebertragen)"
+                    ),
                     style="rem",
                 )
             )
@@ -2392,7 +2465,9 @@ class RuleEngine:
 
         # StartService / StopService
         if kind_lower in ("startservice", "stopservice"):
-            svc_val = cmd.params.get("service_name") or (cmd.raw_args[0] if cmd.raw_args else IrLiteral(value=""))
+            svc_val = cmd.params.get("service_name") or (
+                cmd.raw_args[0] if cmd.raw_args else IrLiteral(value="")
+            )
             svc_name = unquote(self.translate_value_to_str(svc_val))
             cmd_name = "StartService" if kind_lower == "startservice" else "StopService"
             result.append(
@@ -2416,9 +2491,13 @@ class RuleEngine:
 
         # InstallService
         if kind_lower == "installservice":
-            svc_val = cmd.params.get("service_name") or (cmd.raw_args[1] if len(cmd.raw_args) > 1 else IrLiteral(value=""))
+            svc_val = cmd.params.get("service_name") or (
+                cmd.raw_args[1] if len(cmd.raw_args) > 1 else IrLiteral(value="")
+            )
             svc_name = unquote(self.translate_value_to_str(svc_val))
-            cmd_val = cmd.params.get("command") or (cmd.raw_args[2] if len(cmd.raw_args) > 2 else IrLiteral(value=""))
+            cmd_val = cmd.params.get("command") or (
+                cmd.raw_args[2] if len(cmd.raw_args) > 2 else IrLiteral(value="")
+            )
             cmd_str = unquote(self.translate_value_to_str(cmd_val))
             result.append(
                 Comment(
@@ -2431,7 +2510,9 @@ class RuleEngine:
                     CallStmt(
                         name="CallHidden",
                         program="cmd.exe",
-                        arguments=[LiteralValue(text=f'/c sc create "{svc_name}" binPath= "{cmd_str}"')],
+                        arguments=[
+                            LiteralValue(text=f'/c sc create "{svc_name}" binPath= "{cmd_str}"')
+                        ],
                         uninstall_only=is_uninstall,
                     )
                 )
@@ -2449,8 +2530,14 @@ class RuleEngine:
 
         # CreateInternetLink -> URL shortcut
         if kind_lower == "createinternetlink":
-            link_name = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "Link"
-            url_str = unquote(self.translate_value_to_str(cmd.raw_args[1])) if len(cmd.raw_args) > 1 else ""
+            link_name = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "Link"
+            )
+            url_str = (
+                unquote(self.translate_value_to_str(cmd.raw_args[1]))
+                if len(cmd.raw_args) > 1
+                else ""
+            )
             result.append(
                 Comment(
                     text=f"; Rem Info: CreateInternetLink '{link_name}' -> '{url_str}'",
@@ -2472,11 +2559,11 @@ class RuleEngine:
         # RegReadValue / RegReadValueEx / RegRead -> Set Var=%%%Key,ValueName%%%
         if kind_lower in ("regreadvalue", "regreadvalueex", "regread"):
             key_val = cmd.raw_args[0] if len(cmd.raw_args) > 0 else IrLiteral(value="")
-            val_name = cmd.raw_args[1] if len(cmd.raw_args) > 1 else IrLiteral(value="")
-            var_name = cmd.raw_args[2] if len(cmd.raw_args) > 2 else IrLiteral(value="")
+            rr_val_name = cmd.raw_args[1] if len(cmd.raw_args) > 1 else IrLiteral(value="")
+            rr_var_name = cmd.raw_args[2] if len(cmd.raw_args) > 2 else IrLiteral(value="")
             key_str = unquote(self.translate_value_to_str(key_val))
-            val_str = unquote(self.translate_value_to_str(val_name))
-            var_str = unquote(self.translate_value_to_str(var_name)).strip("%")
+            val_str = unquote(self.translate_value_to_str(rr_val_name))
+            var_str = unquote(self.translate_value_to_str(rr_var_name)).strip("%")
             result.append(
                 SetStmt(
                     variable=var_str,
@@ -2498,7 +2585,9 @@ class RuleEngine:
 
         # MsgBoxEx / MsgBox -> Prompt
         if kind_lower in ("msgboxex", "msgbox"):
-            msg_val = cmd.params.get("message") or (cmd.raw_args[0] if cmd.raw_args else IrLiteral(value=""))
+            msg_val = cmd.params.get("message") or (
+                cmd.raw_args[0] if cmd.raw_args else IrLiteral(value="")
+            )
             msg_str = unquote(self.translate_value_to_str(msg_val))
             msg_clean = msg_str.replace("<cr>", " ").replace("<CR>", " ").strip()
             result.append(
@@ -2549,7 +2638,9 @@ class RuleEngine:
 
         # LocalUserCreate
         if kind_lower == "localusercreate":
-            user_name = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "User"
+            user_name = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "User"
+            )
             result.append(
                 Comment(
                     text=f"; Rem Info: LocalUserCreate '{user_name}' (Lokaler Benutzer)",
@@ -2578,7 +2669,9 @@ class RuleEngine:
 
         # LocalUserSetPassword / LocalUserSetFlags
         if kind_lower in ("localusersetpassword", "localusersetflags"):
-            user_name = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "User"
+            user_name = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "User"
+            )
             result.append(
                 Comment(
                     text=f"; Rem Info: LocalUserSetPassword '{user_name}'",
@@ -2599,12 +2692,19 @@ class RuleEngine:
 
         # LocalGroupAddMembers
         if kind_lower == "localgroupaddmembers":
-            grp_raw = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "Administratoren"
+            grp_raw = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0]))
+                if cmd.raw_args
+                else "Administratoren"
+            )
             grp_name = grp_raw.split("|")[0].strip()
             members = [unquote(self.translate_value_to_str(a)).strip() for a in cmd.raw_args[1:]]
             result.append(
                 Comment(
-                    text=f"; Rem Info: LocalGroupAddMembers '{grp_name}': {', '.join(members) if members else 'Standard'}",
+                    text=(
+                        f"; Rem Info: LocalGroupAddMembers '{grp_name}': "
+                        f"{', '.join(members) if members else 'Standard'}"
+                    ),
                     style="rem",
                 )
             )
@@ -2614,7 +2714,9 @@ class RuleEngine:
                         CallStmt(
                             name="CallHidden",
                             program="cmd.exe",
-                            arguments=[LiteralValue(text=f'/c net localgroup "{grp_name}" "{m}" /add')],
+                            arguments=[
+                                LiteralValue(text=f'/c net localgroup "{grp_name}" "{m}" /add')
+                            ],
                             uninstall_only=is_uninstall,
                         )
                     )
@@ -2632,12 +2734,19 @@ class RuleEngine:
 
         # LocalGroupRemoveMembers
         if kind_lower == "localgroupremovemembers":
-            grp_raw = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else "Administratoren"
+            grp_raw = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0]))
+                if cmd.raw_args
+                else "Administratoren"
+            )
             grp_name = grp_raw.split("|")[0].strip()
             members = [unquote(self.translate_value_to_str(a)).strip() for a in cmd.raw_args[1:]]
             result.append(
                 Comment(
-                    text=f"; Rem Info: LocalGroupRemoveMembers '{grp_name}': {', '.join(members) if members else 'Standard'}",
+                    text=(
+                        f"; Rem Info: LocalGroupRemoveMembers '{grp_name}': "
+                        f"{', '.join(members) if members else 'Standard'}"
+                    ),
                     style="rem",
                 )
             )
@@ -2647,7 +2756,9 @@ class RuleEngine:
                         CallStmt(
                             name="CallHidden",
                             program="cmd.exe",
-                            arguments=[LiteralValue(text=f'/c net localgroup "{grp_name}" "{m}" /delete')],
+                            arguments=[
+                                LiteralValue(text=f'/c net localgroup "{grp_name}" "{m}" /delete')
+                            ],
                             uninstall_only=is_uninstall,
                         )
                     )
@@ -2686,7 +2797,9 @@ class RuleEngine:
 
         # ModifyOem / ModifyOemEx -> Textdatei bearbeiten
         if kind_lower in ("modifyoem", "modifyoemex"):
-            target_file = unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else ""
+            target_file = (
+                unquote(self.translate_value_to_str(cmd.raw_args[0])) if cmd.raw_args else ""
+            )
             entries = [
                 unquote(self.translate_value_to_str(a)).strip()
                 for a in cmd.raw_args[1:]
@@ -2790,7 +2903,10 @@ class RuleEngine:
                 result.append(
                     Command(
                         name="RenDir",
-                        args=[self._quote_path_if_needed(src_str), self._quote_path_if_needed(tgt_str)],
+                        args=[
+                            self._quote_path_if_needed(src_str),
+                            self._quote_path_if_needed(tgt_str),
+                        ],
                         uninstall_only=is_uninstall,
                     )
                 )
@@ -2807,7 +2923,10 @@ class RuleEngine:
             else:
                 result.append(
                     Comment(
-                        text="Rem Hinweis (Klasse 1): RenDir erfordert --allow-undocumented. Fallback auf cmd.exe:",
+                        text=(
+                            "Rem Hinweis (Klasse 1): RenDir erfordert "
+                            "--allow-undocumented. Fallback auf cmd.exe:"
+                        ),
                         style="rem",
                     )
                 )
@@ -2861,14 +2980,20 @@ class RuleEngine:
             else:
                 result.append(
                     Comment(
-                        text=f"Rem TODO (Klasse 1): CollapseEnv {var_str} (erfordert --allow-undocumented)",
+                        text=(
+                            f"Rem TODO (Klasse 1): CollapseEnv {var_str} "
+                            "(erfordert --allow-undocumented)"
+                        ),
                         style="rem",
                     )
                 )
                 todos.append(
                     IrTodo(
                         raw=cmd.src.raw,
-                        message=f"Befehl CollapseEnv '{var_str}' erfordert Feature-Flag --allow-undocumented",
+                        message=(
+                            f"Befehl CollapseEnv '{var_str}' erfordert "
+                            "Feature-Flag --allow-undocumented"
+                        ),
                         src=cmd.src,
                         confidence=0.5,
                     )
@@ -2949,7 +3074,10 @@ class RuleEngine:
             else:
                 result.append(
                     Comment(
-                        text=f"; Rem Info: BlockInput {flag_val} (befehlsbasiert nur mit --allow-undocumented, sonst via [Setup] BlockInput)",
+                        text=(
+                            f"; Rem Info: BlockInput {flag_val} (befehlsbasiert nur mit "
+                            "--allow-undocumented, sonst via [Setup] BlockInput)"
+                        ),
                         style="rem",
                     )
                 )
@@ -3266,20 +3394,15 @@ class RuleEngine:
         sections: list[Section] = []
 
         # Determine method (MSI or Unattend)
-        is_msi = (
-            any(m.suffix.lower() in (".msi", ".msp") for m in self._media_files)
-            or bool(self._msi_product_codes)
+        is_msi = any(m.suffix.lower() in (".msi", ".msp") for m in self._media_files) or bool(
+            self._msi_product_codes
         )
         method_str = "MSI" if is_msi else "Unattend"
         has_hkcu = any(
-            re.root.upper() in ("HKCU", "HKEY_CURRENT_USER")
-            for re in self._collected_reg_entries
+            re.root.upper() in ("HKCU", "HKEY_CURRENT_USER") for re in self._collected_reg_entries
         ) or (
             parsed_nirs is not None
-            and any(
-                k.root.upper() in ("HKCU", "HKEY_CURRENT_USER")
-                for k in parsed_nirs
-            )
+            and any(k.root.upper() in ("HKCU", "HKEY_CURRENT_USER") for k in parsed_nirs)
         )
         needs_aw = self._has_client_section or self._has_user_context or has_hkcu
         cmd_opts = "/S2 /AW" if needs_aw else "/S2"
@@ -3290,7 +3413,9 @@ class RuleEngine:
                     source_line=1,
                     source_raw="HKCU / User profile context detected",
                     confidence="high",
-                    target_summary="Added /AW to [SetupInfo] Command line options for user context (VAL-006)",
+                    target_summary=(
+                        "Added /AW to [SetupInfo] Command line options for user context (VAL-006)"
+                    ),
                     doc_ref="CLIENT / MACHINE Flags and /AW",
                 )
             )
@@ -3510,9 +3635,7 @@ class RuleEngine:
                     ),
                     KeyValue(
                         key="ErrorLogMessage",
-                        value=(
-                            "The installation/uninstallation aborted with an error message!"
-                        ),
+                        value=("The installation/uninstallation aborted with an error message!"),
                     ),
                     KeyValue(key="InstallationFor", value="Installation for:"),
                     KeyValue(

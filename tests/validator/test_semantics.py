@@ -540,7 +540,6 @@ Sleep=3000
     assert "Sleep=" in val021[0].message
 
 
-
 def test_val030_utf8_bom_in_text_rejected() -> None:
     """VAL-030: A leading UTF-8 BOM (U+FEFF) in the emitted text is an error."""
     text = """﻿[SetupInfo]

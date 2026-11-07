@@ -239,11 +239,7 @@ def test_manual_charset_label_matches_builder_charset(tmp_path: Path) -> None:
     inventory = scan(src)
 
     default_info = extract_manual_info(inventory=inventory, inf_content="")
-    assert (
-        default_info.basic_parameters["Zeichensatz (Setup.inf)"] == "UTF-8 (mit BOM)"
-    )
+    assert default_info.basic_parameters["Zeichensatz (Setup.inf)"] == "UTF-8 (mit BOM)"
 
     ansi_info = extract_manual_info(inventory=inventory, inf_content="", inf_charset="cp1252")
-    assert (
-        ansi_info.basic_parameters["Zeichensatz (Setup.inf)"] == "Windows-1252 (CP1252 / ANSI)"
-    )
+    assert ansi_info.basic_parameters["Zeichensatz (Setup.inf)"] == "Windows-1252 (CP1252 / ANSI)"

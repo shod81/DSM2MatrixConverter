@@ -120,7 +120,7 @@ class RuleSet(BaseModel):
             if r.category == "command" and r.kind.lower() == cmd_lower:
                 return r
         if cmd_lower in ("regmodify", "regmodifydword", "regmodifyqword", "regmodifymultisz"):
-            return self.get_rule_by_id("M-10")
+            return self.get_rule("M-10")
         return None
 
     def get_variable_rule(self, var_name: str) -> RuleDefinition | None:

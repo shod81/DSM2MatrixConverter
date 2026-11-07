@@ -481,7 +481,8 @@ def test_synthesized_uninstall_when_no_begin_uninstall(tmp_path: Path) -> None:
         "KillProcess('MyDaemon.exe')/TS\n"
         r"MakeDir('%App%\Data')/TS" + "\n"
         r"Copy('%Src%\config.ini', '%App%\config.ini')/TS" + "\n"
-        r"RegModify('HKEY_LOCAL_MACHINE\Software\MyCorp\App', 'Version', '2.0')/TS" + "\n"
+        r"RegModify('HKEY_LOCAL_MACHINE\Software\MyCorp\App', 'Version', '2.0')/TS"
+        + "\n"
         + msi_cmd
         + "\n"
     )
@@ -521,12 +522,11 @@ def test_synthesized_uninstall_when_no_begin_uninstall(tmp_path: Path) -> None:
     assert any(r'-DelTree "%App%\Data"' in d_line for d_line in deinst_lines)
     assert any(r'-Del "%App%\config.ini"' in d_line for d_line in deinst_lines)
     assert any(
-        "-CallHidden msiexec.exe /x \"%Src%\\setup.msi\" /qn" in d_line for d_line in deinst_lines
+        '-CallHidden msiexec.exe /x "%Src%\\setup.msi" /qn' in d_line for d_line in deinst_lines
     )
     assert any("-KillProcess MyDaemon.exe" in d_line for d_line in deinst_lines)
     assert any(
-        'If "%ErrorLevel%" != "0" Then "AbortMSIInst" EndIf' in d_line
-        for d_line in deinst_lines
+        'If "%ErrorLevel%" != "0" Then "AbortMSIInst" EndIf' in d_line for d_line in deinst_lines
     )
     assert any(
         'If "%ErrorLevel%" == "3010" Then "RebootRequired" EndIf' in d_line
@@ -550,8 +550,8 @@ def test_synthesized_uninstall_when_no_begin_uninstall(tmp_path: Path) -> None:
     )
 
     # 5. Check Registry deletion in Reg:Product
-    assert '[Reg:Product]' in inf_text
-    assert '-HKLM,Software\\MyCorp\\App,Version' in inf_text
+    assert "[Reg:Product]" in inf_text
+    assert "-HKLM,Software\\MyCorp\\App,Version" in inf_text
 
 
 def test_abort_msi_section_only_when_msi_used(tmp_path: Path) -> None:
@@ -573,8 +573,7 @@ def test_abort_msi_section_only_when_msi_used(tmp_path: Path) -> None:
 
     # 1. Pure unattend package: no msiexec anywhere -> no MSI error section
     unattend_inf = _transform(
-        "Copy('%Src%\\tool.exe', '%App%\\tool.exe')/TS\n"
-        "KillProcess('MyDaemon.exe')/TS\n",
+        "Copy('%Src%\\tool.exe', '%App%\\tool.exe')/TS\nKillProcess('MyDaemon.exe')/TS\n",
         "UnattendApp",
     )
     assert "[AbortMSIInst]" not in unattend_inf
@@ -725,8 +724,6 @@ def test_function_condition_eval_without_nameerror(tmp_path: Path) -> None:
     assert 'FileVersion ("C:\\Program Files\\App\\app.exe")' in inf_text
 
 
-
-
 def test_engine_reuse_resets_per_package_state() -> None:
     """Regression: a reused RuleEngine must not leak state between packages.
 
@@ -826,9 +823,7 @@ def test_delete_command_directory_becomes_deltree(tmp_path: Path) -> None:
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_file.read_text(encoding="utf-8"), script_file)
-    result = RuleEngine(load_rules()).transform_package(
-        IrPackage(name="App", main_script=script)
-    )
+    result = RuleEngine(load_rules()).transform_package(IrPackage(name="App", main_script=script))
     inf_text, _ = emit(result.document)
 
     # install context: Delete of a directory -> DelTree (no '-', install section)
@@ -844,17 +839,11 @@ def test_delete_command_directory_becomes_deltree(tmp_path: Path) -> None:
 
 def test_if_with_and_condition_emits_ampersand(tmp_path: Path) -> None:
     """Test that DSM If with AND condition is emitted with '&' in Setup.inf."""
-    script_text = (
-        "If %Var1% == '1' And %Var2% == '2'\n"
-        "  ExecuteEx('setup.exe', '', '0')\n"
-        "EndIf\n"
-    )
+    script_text = "If %Var1% == '1' And %Var2% == '2'\n  ExecuteEx('setup.exe', '', '0')\nEndIf\n"
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
-    result = RuleEngine(load_rules()).transform_package(
-        IrPackage(name="App", main_script=script)
-    )
+    result = RuleEngine(load_rules()).transform_package(IrPackage(name="App", main_script=script))
     inf_text, _ = emit(result.document)
 
     assert '("%Var1%" == "1") & ("%Var2%" == "2")' in inf_text
@@ -889,13 +878,11 @@ def test_regmodifydword_toplevel_in_reg_product(tmp_path: Path) -> None:
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
-    result = RuleEngine(load_rules()).transform_package(
-        IrPackage(name="App", main_script=script)
-    )
+    result = RuleEngine(load_rules()).transform_package(IrPackage(name="App", main_script=script))
     inf_text, _ = emit(result.document)
 
-    assert '[Reg:Product]' in inf_text
-    assert 'HKLM,SOFTWARE\\TestApp,Setting,0x00010001,1' in inf_text
+    assert "[Reg:Product]" in inf_text
+    assert "HKLM,SOFTWARE\\TestApp,Setting,0x00010001,1" in inf_text
 
 
 def test_regmodifydword_in_if_branch_uses_callhidden_reg_add(tmp_path: Path) -> None:
@@ -908,18 +895,22 @@ def test_regmodifydword_in_if_branch_uses_callhidden_reg_add(tmp_path: Path) -> 
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
-    result = RuleEngine(load_rules()).transform_package(
-        IrPackage(name="App", main_script=script)
-    )
+    result = RuleEngine(load_rules()).transform_package(IrPackage(name="App", main_script=script))
     inf_text, _ = emit(result.document)
 
-    assert 'If "%HKLM,SYSTEM\\CurrentControlSet\\Services\\bfs,Start%" == "2" Then "Set:Then_1" EndIf' in inf_text
-    assert '[Set:Then_1]' in inf_text
-    assert 'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 4 /f' in inf_text
+    assert (
+        'If "%HKLM,SYSTEM\\CurrentControlSet\\Services\\bfs,Start%" == "2" Then "Set:Then_1" EndIf'
+        in inf_text
+    )
+    assert "[Set:Then_1]" in inf_text
+    assert (
+        'CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 4 /f" in inf_text
+    )
 
 
 def test_beginuninstallscript_regmodifydword_emits_minus_callhidden(tmp_path: Path) -> None:
-    """Test $BeginUninstallScript with RegModifyDWord emits -CallHidden reg.exe add in [Set:Deinstallation]."""
+    """Test $BeginUninstallScript emits -CallHidden reg add in [Set:Deinstallation]."""
     script_text = (
         "RegModifyDWord('HKLM\\SOFTWARE\\App','Mode','1',mrdwSet)\n"
         ": $BeginUninstallScript\n"
@@ -928,13 +919,14 @@ def test_beginuninstallscript_regmodifydword_emits_minus_callhidden(tmp_path: Pa
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
-    result = RuleEngine(load_rules()).transform_package(
-        IrPackage(name="App", main_script=script)
-    )
+    result = RuleEngine(load_rules()).transform_package(IrPackage(name="App", main_script=script))
     inf_text, _ = emit(result.document)
 
-    assert '[Set:Deinstallation]' in inf_text
-    assert '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" /v Start /t REG_DWORD /d 2 /f' in inf_text
+    assert "[Set:Deinstallation]" in inf_text
+    assert (
+        '-CallHidden reg.exe add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\bfs" '
+        "/v Start /t REG_DWORD /d 2 /f" in inf_text
+    )
 
 
 def test_dsm_system_variables_mapped(tmp_path: Path) -> None:
@@ -965,12 +957,9 @@ def test_dsm_system_variables_mapped(tmp_path: Path) -> None:
     assert "%DomainName%" in inf_text
 
 
-
 def test_hkcu_activates_aw_switch(tmp_path: Path) -> None:
     """Test that HKCU registry modifications activate /AW in [SetupInfo] Command line options."""
-    script_text = (
-        "RegModify('HKCU\\Software\\MyVendor\\MyApp','Theme','Dark',mrCreate)\n"
-    )
+    script_text = "RegModify('HKCU\\Software\\MyVendor\\MyApp','Theme','Dark',mrCreate)\n"
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
@@ -1019,9 +1008,7 @@ def test_tu_user_commands_route_to_client(tmp_path: Path) -> None:
 
     # 3. /AW switch in [SetupInfo]
     assert "Command line options=/S2 /AW" in inf_text
-    assert any(
-        t.rule_id == "S-05" and "/TU" in t.target_summary for t in result.traces
-    )
+    assert any(t.rule_id == "S-05" and "/TU" in t.target_summary for t in result.traces)
 
 
 def test_tu_with_hkcu_keeps_reg_product_unflagged(tmp_path: Path) -> None:
@@ -1086,11 +1073,8 @@ def test_tu_and_imuserpart_merge_into_single_client_section(tmp_path: Path) -> N
 
 
 def test_uninstall_synthesizes_sleep_before_cleanup(tmp_path: Path) -> None:
-    """Test that synthesized uninstall places -Sleep 3000 between uninstaller and directory cleanup."""
-    script_text = (
-        "ExecuteEx('\"%Src%\\\\setup.exe\" /S', 'rc', '60')\n"
-        "MakeDir('%App%\\\\Cache')\n"
-    )
+    """Synthesized uninstall places -Sleep 3000 between uninstaller and cleanup."""
+    script_text = "ExecuteEx('\"%Src%\\\\setup.exe\" /S', 'rc', '60')\nMakeDir('%App%\\\\Cache')\n"
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
@@ -1103,10 +1087,13 @@ def test_uninstall_synthesizes_sleep_before_cleanup(tmp_path: Path) -> None:
     assert "-Sleep 3000" in inf_text
     # DelTree appears before -Sleep in reverse execution order (file text order)
     lines = inf_text.splitlines()
-    idx_deltree = next(i for i, l in enumerate(lines) if "-DelTree" in l)
-    idx_sleep = next(i for i, l in enumerate(lines) if "-Sleep 3000" in l)
-    idx_uninst = next(i for i, l in enumerate(lines) if "uninstall.exe" in l or "setup.exe" in l)
-    # File order: DelTree < Sleep < Uninstaller (reverse execution: Uninstaller runs, then Sleep, then DelTree)
+    idx_deltree = next(i for i, line in enumerate(lines) if "-DelTree" in line)
+    idx_sleep = next(i for i, line in enumerate(lines) if "-Sleep 3000" in line)
+    idx_uninst = next(
+        i for i, line in enumerate(lines) if "uninstall.exe" in line or "setup.exe" in line
+    )
+    # File order: DelTree < Sleep < Uninstaller.
+    # Reverse execution: uninstaller, then Sleep, then DelTree.
     assert idx_deltree < idx_sleep < idx_uninst
 
 
@@ -1186,11 +1173,14 @@ def test_callscriptas_machine_context_and_user_context(tmp_path: Path) -> None:
         IrPackage(name="SisApp", main_script=script1)
     )
     inf_text1, _ = emit(result1.document)
-    assert 'powershell.exe -ExecutionPolicy Bypass -NoProfile -File "C:\\Scripts\\test.ps1"' in inf_text1
+    assert (
+        'powershell.exe -ExecutionPolicy Bypass -NoProfile -File "C:\\Scripts\\test.ps1"'
+        in inf_text1
+    )
     assert len(result1.todos) == 0
 
     # 2. User impersonation
-    script_text2 = "CallScriptAs('C:\\Scripts\\test.ps1', '', 'AZDOM\\User', 'secret', 0)\n"
+    script_text2 = "CallScriptAs('C:\\Scripts\\test.ps1', '', 'EXAMPLE\\User', 'secret', 0)\n"
     script_file2 = tmp_path / "Script2.inc"
     script_file2.write_text(script_text2, encoding="utf-8")
     script2 = parse_script(script_text2, script_file2)
@@ -1198,12 +1188,15 @@ def test_callscriptas_machine_context_and_user_context(tmp_path: Path) -> None:
         IrPackage(name="UserApp", main_script=script2)
     )
     assert len(result2.todos) == 1
-    assert "AZDOM\\User" in result2.todos[0].message
+    assert "EXAMPLE\\User" in result2.todos[0].message
 
 
 def test_msireinstallproduct_with_errorlevel_check(tmp_path: Path) -> None:
-    """MSIReInstallProduct emits CallHidden msiexec.exe /f "{GUID}" /qn followed by ErrorLevel checks."""
-    script_text = "MSIReInstallProduct('{F23C7215-F3C6-4CBF-9AF2-820DF17F63A5}', 'TestApp', '64', '1', '0')/TS\n"
+    """MSIReInstallProduct emits CallHidden msiexec /f followed by ErrorLevel checks."""
+    script_text = (
+        "MSIReInstallProduct('{F23C7215-F3C6-4CBF-9AF2-820DF17F63A5}', "
+        "'TestApp', '64', '1', '0')/TS\n"
+    )
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
@@ -1218,8 +1211,8 @@ def test_msireinstallproduct_with_errorlevel_check(tmp_path: Path) -> None:
 
 
 def test_executeex_split_command_args_preserves_quoted_spaces(tmp_path: Path) -> None:
-    """ExecuteEx with /DIR="C:\\Program Files\\App" preserves the parameter without splitting spaces."""
-    script_text = 'ExecuteEx(\'%SRC%\\Setup.exe /VERYSILENT /DIR="C:\\Program Files\\App"\')/TS\n'
+    """ExecuteEx with a quoted /DIR parameter containing spaces keeps it intact."""
+    script_text = "ExecuteEx('%SRC%\\Setup.exe /VERYSILENT /DIR=\"C:\\Program Files\\App\"')/TS\n"
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
@@ -1233,7 +1226,11 @@ def test_executeex_split_command_args_preserves_quoted_spaces(tmp_path: Path) ->
 
 def test_runasex_split_command_args(tmp_path: Path) -> None:
     """RunAsEx splits multiple arguments into individual tokens properly."""
-    script_text = 'RunAsEx(\'%WINSYSDIR%\\schtasks.exe\', \'/Create /XML "%SRC%\\Files\\test.xml" /TN "TaskName" /F\', \'\', \'\', \'\', \'\', raUseSisAccount)/TS\n'
+    script_text = (
+        "RunAsEx('%WINSYSDIR%\\schtasks.exe', "
+        '\'/Create /XML "%SRC%\\Files\\test.xml" /TN "TaskName" /F\', '
+        "'', '', '', '', raUseSisAccount)/TS\n"
+    )
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
@@ -1241,9 +1238,8 @@ def test_runasex_split_command_args(tmp_path: Path) -> None:
         IrPackage(name="TaskApp", main_script=script)
     )
     inf_text, issues = emit(result.document)
-    assert 'CallHidden "%System%\\schtasks.exe" /Create /XML "%Src%\\Files\\test.xml" /TN "TaskName" /F' in inf_text
+    assert (
+        'CallHidden "%System%\\schtasks.exe" /Create /XML '
+        '"%Src%\\Files\\test.xml" /TN "TaskName" /F' in inf_text
+    )
     assert not any(i.code == "W2004" for i in issues)
-
-
-
-

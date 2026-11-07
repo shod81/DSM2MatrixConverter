@@ -138,9 +138,7 @@ def build_ico(images: dict[int, Image.Image]) -> bytes:
     ordered = [size for size in ICO_SIZES if size in images]
     entries: list[tuple[int, int, int, bytes]] = []
     for size in ordered:
-        data = (
-            _png_bytes(images[size]) if size == 256 else _bmp_frame(images[size])
-        )
+        data = _png_bytes(images[size]) if size == 256 else _bmp_frame(images[size])
         entries.append((size, size, 32, data))
 
     offset = 6 + 16 * len(entries)

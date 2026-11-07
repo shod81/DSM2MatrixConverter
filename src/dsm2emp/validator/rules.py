@@ -180,7 +180,8 @@ def validate_document(doc: InfDocument) -> list[Issue]:
                                 Issue(
                                     code="VAL-003",
                                     message=(
-                                        f"DelTree path '{raw_arg}' in [{sec.name}] has a trailing backslash "
+                                        f"DelTree path '{raw_arg}' in [{sec.name}] "
+                                        "has a trailing backslash "
                                         "which causes Setup.exe to fail (VAL-003)"
                                     ),
                                     severity="error",
@@ -205,7 +206,8 @@ def validate_document(doc: InfDocument) -> list[Issue]:
                             Issue(
                                 code="VAL-004",
                                 message=(
-                                    f"Command '{line.name}' in [{sec.name}] lacks the '-' prefix required "
+                                    f"Command '{line.name}' in [{sec.name}] lacks the '-' "
+                                    "prefix required "
                                     "for execution during uninstallation (/U) (VAL-004)"
                                 ),
                                 severity="error",
@@ -256,8 +258,10 @@ def validate_document(doc: InfDocument) -> list[Issue]:
                         Issue(
                             code="VAL-005",
                             message=(
-                                "[Product] calls #Shell:Product while ShellLinks=1 in [Application]; "
-                                "Setup.exe executes [Shell:Product] automatically, resulting in duplicate "
+                                "[Product] calls #Shell:Product while ShellLinks=1 "
+                                "in [Application]; "
+                                "Setup.exe executes [Shell:Product] automatically, "
+                                "resulting in duplicate "
                                 "shortcuts (VAL-005)"
                             ),
                             severity="warning",
@@ -286,15 +290,17 @@ def validate_document(doc: InfDocument) -> list[Issue]:
     for sec in doc.sections:
         if sec.name.lower().startswith("reg:"):
             for line in sec.lines:
-                if isinstance(line, RegEntry) and line.root.upper() in ("HKCU", "HKEY_CURRENT_USER"):
+                if isinstance(line, RegEntry) and line.root.upper() in (
+                    "HKCU",
+                    "HKEY_CURRENT_USER",
+                ):
                     has_hkcu = True
                     break
         elif sec.name.lower().startswith("set:"):
             for line in sec.lines:
                 if isinstance(line, Command):
                     cmd_text = " ".join(
-                        arg.text if isinstance(arg, LiteralValue) else str(arg)
-                        for arg in line.args
+                        arg.text if isinstance(arg, LiteralValue) else str(arg) for arg in line.args
                     ).lower()
                     if "hkcu" in cmd_text or "hkey_current_user" in cmd_text:
                         has_hkcu = True
@@ -307,7 +313,8 @@ def validate_document(doc: InfDocument) -> list[Issue]:
             Issue(
                 code="VAL-006",
                 message=(
-                    "HKCU registry entries found but [SetupInfo] 'Command line options' lacks '/AW' "
+                    "HKCU registry entries found but [SetupInfo] 'Command line "
+                    "options' lacks '/AW' "
                     "and no section has CLIENT flag; settings will not apply to end users (VAL-006)"
                 ),
                 severity="warning",
@@ -332,7 +339,8 @@ def validate_document(doc: InfDocument) -> list[Issue]:
                             Issue(
                                 code="VAL-007",
                                 message=(
-                                    f"Dangerous root deletion '-{line.root},{line.key}' in [{sec.name}] "
+                                    f"Dangerous root deletion '-{line.root},{line.key}' "
+                                    f"in [{sec.name}] "
                                     "may delete shared operating system or vendor trees (VAL-007)"
                                 ),
                                 severity="warning",
@@ -342,13 +350,16 @@ def validate_document(doc: InfDocument) -> list[Issue]:
     # 10. VAL-008: Missing ErrorLevel handling after MSI / Setup Call
     for sec in doc.sections:
         if sec.name.lower().startswith("set:"):
-            for i, line in enumerate(sec.lines):
+            for _i, line in enumerate(sec.lines):
                 if isinstance(line, CallStmt):
-                    prog = line.program.lower()
+                    program = line.program
+                    prog = program.lower() if isinstance(program, str) else ""
                     is_msi = "msiexec" in prog or prog.endswith(".msi")
                     if is_msi:
-                        # In forward execution, ErrorLevel check follows the call (sec.lines[i + 1 :]).
-                        # In reverse uninstall execution, ErrorLevel check precedes the call in text order (sec.lines[:i]).
+                        # In forward execution, ErrorLevel check follows the call
+                        # (sec.lines[i + 1 :]).
+                        # In reverse uninstall execution, ErrorLevel check precedes the call
+                        # in text order (sec.lines[:i]).
                         has_rc_check = any(
                             isinstance(nxt, IfStmt)
                             and (
@@ -362,7 +373,8 @@ def validate_document(doc: InfDocument) -> list[Issue]:
                                 Issue(
                                     code="VAL-008",
                                     message=(
-                                        f"MSI installer call '{line.program}' in [{sec.name}] not followed by "
+                                        f"MSI installer call '{line.program}' in [{sec.name}] "
+                                        "not followed by "
                                         "%ErrorLevel% check (VAL-008)"
                                     ),
                                     severity="warning",
@@ -546,8 +558,10 @@ def validate_text(
                     Issue(
                         code="VAL-002",
                         message=(
-                            f"Function predicate '{m_val002.group(1)}' in If statement must not be enclosed "
-                            "in quotes; Empirum will perform string comparison instead of executing function (VAL-002)"
+                            f"Function predicate '{m_val002.group(1)}' in If statement "
+                            "must not be enclosed "
+                            "in quotes; Empirum will perform string comparison instead of "
+                            "executing function (VAL-002)"
                         ),
                         severity="error",
                     )
@@ -555,7 +569,7 @@ def validate_text(
 
             # VAL-022: Non-existent alias predicates (K-02)
             m_val022 = re.search(
-                r'(?i)^\s*-?if\b.*\b(DirExists|FileExists|ProcessExists|RegKeyExists|RegValueExists|DoesDirExist|DoesServiceExist|ServiceExists|DoesRegValueExist)\s*\(',
+                r"(?i)^\s*-?if\b.*\b(DirExists|FileExists|ProcessExists|RegKeyExists|RegValueExists|DoesDirExist|DoesServiceExist|ServiceExists|DoesRegValueExist)\s*\(",
                 line,
             )
             if m_val022:
@@ -564,15 +578,17 @@ def validate_text(
                         code="VAL-022",
                         message=(
                             f"Non-existent predicate '{m_val022.group(1)}' in If statement (K-02); "
-                            "not supported by Empirum Setup interpreter v26.1.0 and will fail silently. "
-                            "Use valid predicate (e.g. DoesFileExist, DoesPathExist, DoesProcessExist, DoesRegKeyExist)."
+                            "not supported by Empirum Setup interpreter v26.1.0 and will "
+                            "fail silently. "
+                            "Use valid predicate (e.g. DoesFileExist, DoesPathExist, "
+                            "DoesProcessExist, DoesRegKeyExist)."
                         ),
                         severity="error",
                     )
                 )
 
             # VAL-023: Deprecated/non-existent CheckLanAdministrator (K-01)
-            if re.search(r'(?i)^\s*-?checklanadministrator\b', line):
+            if re.search(r"(?i)^\s*-?checklanadministrator\b", line):
                 issues.append(
                     Issue(
                         code="VAL-023",
@@ -587,7 +603,7 @@ def validate_text(
             # VAL-024: Undocumented interpreter command (Klasse 1) without feature flag
             if not allow_undocumented:
                 m_val024 = re.search(
-                    r'(?i)^\s*-?(CollapseEnv|Extract|RenDir)\b|^\s*-?(BlockInput)\s+[01]\b',
+                    r"(?i)^\s*-?(CollapseEnv|Extract|RenDir)\b|^\s*-?(BlockInput)\s+[01]\b",
                     line,
                 )
                 if m_val024:
@@ -605,7 +621,7 @@ def validate_text(
 
             # VAL-020: Direct command after Then in If statement
             m_val020 = re.search(
-                r'(?i)^\s*-?if\b.+\bthen\s+(abort|echo|exit|call|callhidden|del|deltree|md|mkdir|rd|rmdir|set|setreboot)\b',
+                r"(?i)^\s*-?if\b.+\bthen\s+(abort|echo|exit|call|callhidden|del|deltree|md|mkdir|rd|rmdir|set|setreboot)\b",
                 line,
             )
             if m_val020:
@@ -613,20 +629,23 @@ def validate_text(
                     Issue(
                         code="VAL-020",
                         message=(
-                            f"Direct command '{m_val020.group(1)}' after Then is illegal in Empirum; "
-                            "only section jumps are permitted: If <Cond> Then \"<Section>\" EndIf (VAL-020)"
+                            f"Direct command '{m_val020.group(1)}' after Then is illegal "
+                            f"in Empirum; "
+                            'only section jumps are permitted: If <Cond> Then "<Section>" '
+                            "EndIf (VAL-020)"
                         ),
                         severity="error",
                     )
                 )
 
             # VAL-021: Sleep= Syntax Error
-            if re.search(r'(?i)^\s*-?sleep\s*=\s*\d+', line):
+            if re.search(r"(?i)^\s*-?sleep\s*=\s*\d+", line):
                 issues.append(
                     Issue(
                         code="VAL-021",
                         message=(
-                            "Invalid syntax 'Sleep=...'; Empirum commands use space delimiter: 'Sleep <ms>' (VAL-021)"
+                            "Invalid syntax 'Sleep=...'; Empirum commands use space "
+                            "delimiter: 'Sleep <ms>' (VAL-021)"
                         ),
                         severity="error",
                     )
@@ -717,4 +736,3 @@ def validate_file(path: Path, allow_undocumented: bool = False) -> list[Issue]:
     # Byte-level encoding verdicts above are precise; skip the text-level duplicate.
     issues.extend(validate_text(text, allow_undocumented=allow_undocumented, check_encoding=False))
     return issues
-

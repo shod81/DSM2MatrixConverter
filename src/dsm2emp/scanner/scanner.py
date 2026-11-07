@@ -135,9 +135,7 @@ def classify_artifact(
 
     # 1. DSM NetInstall cache or internal revision folder
     if filename_lower.endswith("_ni5.zip") or "rev" in parts_lower:
-        desc = (
-            f"DSM NetInstall Paket-Cache / Revision ({rel_path.name}) - für Empirum übersprungen"
-        )
+        desc = f"DSM NetInstall Paket-Cache / Revision ({rel_path.name}) - für Empirum übersprungen"
         return "internal", desc
 
     # 2. DSM project status and backup files

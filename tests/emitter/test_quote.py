@@ -290,7 +290,7 @@ def test_f25_window_title_with_spaces() -> None:
 
 
 def test_cli_token_with_inner_quotes_and_spaces() -> None:
-    """CLI token with quotes around path containing spaces should not receive outer quotes or W2004."""
+    """Quoted CLI token with spaces must not receive outer quotes or W2004."""
     issues: list[Issue] = []
     token = '/DIR="C:\\Program Files\\UltraVNC"'
     rendered = q_call_token(token, issues=issues)
@@ -305,4 +305,3 @@ def test_transforms_token_no_w2004_warning() -> None:
     rendered = q_call_token(token, issues=issues)
     assert rendered == 'TRANSFORMS="%SRC%\\Files\\Msidata\\jre.mst"'
     assert not any(i.code == "W2004" for i in issues)
-

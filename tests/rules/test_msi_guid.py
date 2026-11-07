@@ -123,4 +123,3 @@ def test_rule_engine_synthesizes_msi_install_product_with_guid(tmp_path: Path) -
 
     inf_text, _ = emit(res.document)
     assert f"-CallHidden MsiExec.exe /X{test_guid} /qn /norestart" in inf_text
-

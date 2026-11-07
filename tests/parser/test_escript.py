@@ -346,11 +346,7 @@ def test_parse_condition_expr_details() -> None:
 
 def test_parse_script_if_with_and(tmp_path: Path) -> None:
     """Test eScript parsing of If-statement with AND condition."""
-    script_text = (
-        "If %Var1% == '1' And %Var2% == '2'\n"
-        "  ExecuteEx('setup.exe', '', '0')\n"
-        "EndIf\n"
-    )
+    script_text = "If %Var1% == '1' And %Var2% == '2'\n  ExecuteEx('setup.exe', '', '0')\nEndIf\n"
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")
     script = parse_script(script_text, script_file)
@@ -367,9 +363,7 @@ def test_parse_script_if_with_and(tmp_path: Path) -> None:
 def test_parse_script_mixed_if_emits_todo(tmp_path: Path) -> None:
     """Test that mixed AND/OR without parentheses emits an IrTodo."""
     script_text = (
-        "If %A% == '1' AND %B% == '2' OR %C% == '3'\n"
-        "  ExecuteEx('setup.exe', '', '0')\n"
-        "EndIf\n"
+        "If %A% == '1' AND %B% == '2' OR %C% == '3'\n  ExecuteEx('setup.exe', '', '0')\nEndIf\n"
     )
     script_file = tmp_path / "Script.inc"
     script_file.write_text(script_text, encoding="utf-8")

@@ -219,7 +219,8 @@ def q_call_token(
     if raw_str.startswith('"') and raw_str.endswith('"'):
         return raw_str
 
-    # Auto-balance single unclosed quote on CLI argument tokens (e.g. -responseFile "path or -f1:"path)
+    # Auto-balance a single unclosed quote on CLI argument tokens
+    # (e.g. -responseFile "path or -f1:"path).
     if not is_program and raw_str.count('"') % 2 != 0:
         if raw_str.startswith('"') and not raw_str.endswith('"'):
             raw_str = raw_str + '"'
@@ -228,7 +229,7 @@ def q_call_token(
         elif not raw_str.startswith('"') and raw_str.endswith('"'):
             raw_str = '"' + raw_str
         else:
-            raw_str = raw_str + '"' 
+            raw_str = raw_str + '"'
 
     # In Empirum, program path in Call is quoted when containing variables, slashes, or spaces
     if is_program:
@@ -480,7 +481,8 @@ def q_reg_entry(entry: RegEntry, issues: list[Issue] | None = None) -> str:
         elif d_str.startswith("0x") or d_str.isdigit():
             rendered_data.append(d_str)
         else:
-            # Literal string registry data: double unbalanced % so Setup.exe treats them as literals (E1005)
+            # Literal string registry data: double unbalanced % so Setup.exe
+            # treats them as literals (E1005).
             clean_check = re.sub(r"(?<!%)%(?:~[A-Za-z0-9]+|[0-9*])(?!%)", "", d_str)
             if clean_check.count("%") % 2 != 0:
                 d_str = d_str.replace("%", "%%")

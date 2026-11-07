@@ -51,15 +51,11 @@ def _extract_setup_inf_meta(setup_inf_path: Path) -> dict[str, str]:
         return meta
 
     # Extract [Application] fields using regex
-    name_m = re.search(
-        r"^\s*ProductName\s*=\s*(.+)$", content, re.MULTILINE | re.IGNORECASE
-    )
+    name_m = re.search(r"^\s*ProductName\s*=\s*(.+)$", content, re.MULTILINE | re.IGNORECASE)
     if name_m:
         meta["product_name"] = name_m.group(1).strip().strip('"').strip("'")
 
-    ver_m = re.search(
-        r"^\s*Version\s*=\s*(.+)$", content, re.MULTILINE | re.IGNORECASE
-    )
+    ver_m = re.search(r"^\s*Version\s*=\s*(.+)$", content, re.MULTILINE | re.IGNORECASE)
     if ver_m:
         meta["version"] = ver_m.group(1).strip().strip('"').strip("'")
 
@@ -132,9 +128,7 @@ def scan_output_directory(output_dir: Path) -> list[PackageIndexEntry]:
             rel_path = cand.name
 
         try:
-            mtime = datetime.datetime.fromtimestamp(
-                cand.stat().st_mtime
-            ).strftime("%Y-%m-%d %H:%M")
+            mtime = datetime.datetime.fromtimestamp(cand.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
         except OSError:
             mtime = "-"
 
@@ -222,7 +216,7 @@ def render_index_html(
             )
         actions.append(
             f'<button type="button" class="btn btn-outline"'
-            f' onclick="copyPath(\'{abs_js_escaped}\', this)"'
+            f" onclick=\"copyPath('{abs_js_escaped}', this)\""
             ' title="Vollständigen Pfad in die Zwischenablage kopieren">📋 Pfad kopieren</button>'
         )
         actions_html = " ".join(actions)

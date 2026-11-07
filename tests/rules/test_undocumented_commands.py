@@ -2,8 +2,15 @@
 
 from pathlib import Path
 
-from dsm2emp.ast.nodes import CallStmt, Command, Comment
-from dsm2emp.parser.ir import IrCommand, IrLiteral, IrPackage, IrScript, SourceRef
+from dsm2emp.ast.nodes import CallStmt, Command
+from dsm2emp.parser.ir import (
+    IrCommand,
+    IrLiteral,
+    IrNode,
+    IrPackage,
+    IrScript,
+    SourceRef,
+)
 from dsm2emp.rules.engine import RuleEngine
 from dsm2emp.rules.loader import load_rules
 from dsm2emp.validator.rules import validate_text
@@ -86,7 +93,9 @@ def test_rule_engine_rendir_transformation() -> None:
     product_sec_undoc = res_undoc.document.section("Set:Product")
     assert product_sec_undoc is not None
     native_cmds = [
-        line for line in product_sec_undoc.lines if isinstance(line, Command) and line.name == "RenDir"
+        line
+        for line in product_sec_undoc.lines
+        if isinstance(line, Command) and line.name == "RenDir"
     ]
     assert len(native_cmds) == 1
     assert native_cmds[0].args == ["OldDir", "NewDir"]
@@ -116,7 +125,9 @@ def test_rule_engine_collapseenv_transformation() -> None:
     product_sec_undoc = res_undoc.document.section("Set:Product")
     assert product_sec_undoc is not None
     native_cmds = [
-        line for line in product_sec_undoc.lines if isinstance(line, Command) and line.name == "CollapseEnv"
+        line
+        for line in product_sec_undoc.lines
+        if isinstance(line, Command) and line.name == "CollapseEnv"
     ]
     assert len(native_cmds) == 1
     assert native_cmds[0].args == ["DynVar"]
@@ -126,7 +137,7 @@ def test_rule_engine_extract_and_blockinput_transformation() -> None:
     ruleset = load_rules()
     src_ref1 = SourceRef(file=Path("script.inc"), line=1, raw="Extract")
     src_ref2 = SourceRef(file=Path("script.inc"), line=2, raw="BlockInput 1")
-    cmds = [
+    cmds: list[IrNode] = [
         IrCommand(kind="Extract", raw_args=[], src=src_ref1),
         IrCommand(kind="BlockInput", raw_args=[IrLiteral(value="1")], src=src_ref2),
     ]
